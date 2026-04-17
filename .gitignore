@@ -25,6 +25,8 @@ yarn-error.log*
 
 # --- Logs & Temp ---
 *.log
+npm-cache/
+requirements.txt.
 truehealth_hms/auth_audit.py
 truehealth_hms/test_safeguards.py
 deployment_guide.md
