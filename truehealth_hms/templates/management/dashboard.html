@@ -1,0 +1,245 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Management Control Center | TrueHealth{% endblock %}
+
+{% block extra_css %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  .glass-card { 
+      background: rgba(255,255,255,0.7); 
+      backdrop-filter: blur(20px); 
+      border-radius: 2.5rem; 
+      border: 1px solid rgba(255,255,255,0.4); 
+      box-shadow: 0 10px 30px rgba(0,0,0,0.04); 
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+  }
+  .glass-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.08); }
+  
+  .hero-card { 
+      background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%); 
+      position: relative; 
+      overflow: hidden; 
+  }
+  .hero-card::before { 
+      content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; 
+      background: radial-gradient(circle at center, rgba(255,255,255,0.1) 0%, transparent 70%); 
+      animation: mesh 20s infinite linear; 
+  }
+  @keyframes mesh { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+  
+  .metric-value { font-size: 2.5rem; font-weight: 800; letter-spacing: -0.05em; color: #1e3a8a; }
+  .metric-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #64748b; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <!-- Hero Section -->
+    <div class="hero-card rounded-[3rem] p-12 mb-10 text-white shadow-2xl relative">
+        <div class="absolute inset-0 bg-gradient-to-br from-blue-600/30 to-transparent"></div>
+        <div class="relative z-10 flex flex-col md:flex-row justify-between items-center gap-8">
+            <div class="text-center md:text-left">
+                <div class="flex items-center justify-center md:justify-start gap-4 mb-4">
+                    <span class="px-3 py-1 bg-white/10 backdrop-blur-md rounded-full border border-white/20 text-[10px] font-black uppercase tracking-widest text-blue-100 italic">
+                        <i class="fas fa-shield-alt mr-1"></i> Management Portal
+                    </span>
+                    <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse shadow-[0_0_10px_rgba(74,222,128,0.8)]"></span>
+                </div>
+                <h1 class="text-6xl font-black brand-text mb-4 tracking-tighter">Control Center</h1>
+                <p class="text-blue-100 text-lg font-medium opacity-80 max-w-xl">Oversee hospital operations, manage departmental resources, and review financial distribution in real-time.</p>
+            </div>
+            
+            <div class="flex gap-4">
+                <div class="glass-card !bg-white/10 !border-white/20 p-6 flex flex-col items-center">
+                    <span class="text-3xl font-black mb-1">{{ total_staff }}</span>
+                    <span class="text-[9px] uppercase font-bold opacity-70 tracking-widest">Total Staff</span>
+                </div>
+                <div class="glass-card !bg-white/10 !border-white/20 p-6 flex flex-col items-center">
+                    <span class="text-3xl font-black mb-1 text-red-200">{{ pending_payroll|floatformat:0 }}</span>
+                    <span class="text-[9px] uppercase font-bold opacity-70 tracking-widest">Pending Payroll</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Metrics Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- workforce chart -->
+        <div class="lg:col-span-2 glass-card p-8">
+            <div class="flex justify-between items-end mb-6">
+                <div>
+                    <h2 class="text-2xl font-black text-blue-900 tracking-tight">Workforce Distribution</h2>
+                    <p class="text-sm text-gray-500 font-medium">Headcount allocation across clinical departments</p>
+                </div>
+                <div class="text-right">
+                    <span class="text-xs font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-full uppercase tracking-tighter">Live Dataset</span>
+                </div>
+            </div>
+            <div class="h-64">
+                <canvas id="deptChart"></canvas>
+            </div>
+        </div>
+
+        <!-- financials widget -->
+        <div class="glass-card p-8 bg-gradient-to-br from-white to-gray-50/50">
+            <h2 class="text-xl font-black text-blue-900 mb-6 tracking-tight">Operational Spend</h2>
+            
+            <div class="space-y-6">
+                <div class="p-4 bg-white/50 rounded-2xl border border-blue-100">
+                    <div class="metric-label mb-1">Pending Expenses</div>
+                    <div class="flex items-baseline gap-2">
+                        <span class="metric-value text-red-600">KES {{ pending_expenses|floatformat:0 }}</span>
+                        <span class="text-xs font-bold text-red-400">UNAPPROVED</span>
+                    </div>
+                </div>
+
+                <div class="p-4 bg-white/50 rounded-2xl border border-green-100">
+                    <div class="metric-label mb-1">Payroll Commitment</div>
+                    <div class="flex items-baseline gap-2">
+                        <span class="metric-value text-green-600">KES {{ pending_payroll|floatformat:0 }}</span>
+                        <span class="text-xs font-bold text-green-400">PENDING</span>
+                    </div>
+                </div>
+
+                <div class="pt-4">
+                    <a href="/admin/billing/invoice/" class="block w-full bg-blue-600 hover:bg-blue-700 text-white text-center font-bold py-4 rounded-2xl shadow-xl transition-all active:scale-95">
+                        <i class="fas fa-file-invoice-dollar mr-2"></i> Open Billing Center
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity Logs -->
+        <div class="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Expenses Log -->
+            <div class="glass-card p-8">
+                <h3 class="text-lg font-black text-blue-900 mb-6 flex justify-between">
+                    Recent Expenses
+                    <a href="/admin/management/expense/" class="text-blue-600 text-xs hover:underline">View Admin →</a>
+                </h3>
+                <div class="space-y-4">
+                    {% for exp in recent_expenses %}
+                    <div class="flex items-center justify-between p-4 bg-white/40 rounded-2xl border border-gray-100">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600">
+                                <i class="fas fa-receipt"></i>
+                            </div>
+                            <div>
+                                <div class="font-bold text-gray-800">{{ exp.category }}</div>
+                                <div class="text-[10px] text-gray-500 uppercase tracking-widest font-bold">{{ exp.date|date:"M d, Y" }}</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="font-black text-gray-900">KES {{ exp.amount }}</div>
+                            <div class="text-[9px] {% if exp.approved %}text-green-500{% else %}text-amber-500{% endif %} font-black uppercase tracking-widest">
+                                {% if exp.approved %}Approved{% else %}Pending{% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="text-center py-8 text-gray-400 italic text-sm">No expenses recorded yet.</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- New Hires Log -->
+            <div class="glass-card p-8">
+                <h3 class="text-lg font-black text-blue-900 mb-6 flex justify-between">
+                    New Onboardings
+                    <a href="/admin/management/staff/" class="text-blue-600 text-xs hover:underline">Manage Staff →</a>
+                </h3>
+                <div class="space-y-4">
+                    {% for s in recent_staff %}
+                    <div class="flex items-center justify-between p-4 bg-white/40 rounded-2xl border border-gray-100">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center text-green-600 font-bold">
+                                {{ s.user.username|slice:":1"|upper }}
+                            </div>
+                            <div>
+                                <div class="font-bold text-gray-800">{{ s.user.get_full_name|default:s.user.username }}</div>
+                                <div class="text-[10px] text-gray-500 uppercase tracking-widest font-bold">{{ s.department|upper }} · {{ s.position }}</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="font-black text-gray-900">#{{ s.employee_id }}</div>
+                            <div class="text-[9px] text-blue-500 font-black uppercase tracking-widest">Grade {{ s.salary_grade }}</div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="text-center py-8 text-gray-400 italic text-sm">No staff onboarded yet.</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- System Quick Actions Footer -->
+        <div class="lg:col-span-3 flex flex-wrap gap-4 mt-6">
+            <a href="/admin/management/staff/add/" class="flex-1 min-w-[200px] glass-card p-4 flex items-center justify-center gap-3 font-bold text-blue-700 hover:bg-blue-600 hover:text-white transition-all cursor-pointer">
+                <i class="fas fa-user-plus"></i> Onboard New Staff
+            </a>
+            <a href="/admin/management/expense/add/" class="flex-1 min-w-[200px] glass-card p-4 flex items-center justify-center gap-3 font-bold text-blue-700 hover:bg-blue-600 hover:text-white transition-all cursor-pointer">
+                <i class="fas fa-file-invoice-dollar"></i> Submit Expense Claim
+            </a>
+            <a href="/admin/management/payroll/add/" class="flex-1 min-w-[200px] glass-card p-4 flex items-center justify-center gap-3 font-bold text-blue-700 hover:bg-blue-600 hover:text-white transition-all cursor-pointer">
+                <i class="fas fa-money-check-alt"></i> Process Payroll Run
+            </a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+    <!-- Embed data as JSON for safe JS access without breaking linting -->
+    {{ dept_stats|json_script:"dept-data-json" }}
+
+    <script>
+    const ctx = document.getElementById('deptChart');
+    
+    // Parse the embedded JSON data
+    const rawData = JSON.parse(document.getElementById('dept-data-json').textContent);
+    
+    const deptLabels = rawData.length 
+        ? rawData.map(item => item.department.toUpperCase()) 
+        : ['CARDIO', 'NEURO', 'EMERGENCY', 'ADMIN', 'PHARMACY', 'LAB'];
+        
+    const deptData = rawData.length 
+        ? rawData.map(item => item.count) 
+        : [12, 19, 3, 5, 2, 3];
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: deptLabels.length ? deptLabels : ['CARDIO', 'NEURO', 'EMERGENCY', 'ADMIN', 'PHARMACY', 'LAB'],
+            datasets: [{
+                label: 'Headcount',
+                data: deptData.length ? deptData : [12, 19, 3, 5, 2, 3],
+                backgroundColor: 'rgba(30, 58, 138, 0.8)',
+                borderRadius: 12,
+                borderSkipped: false,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: { beginAtZero: true, grid: { display: false }, ticks: { font: { weight: 'bold' } } },
+                x: { grid: { display: false }, ticks: { font: { weight: 'bold', size: 10 } } }
+            }
+        }
+    });
+
+    // Auto-refresh logic placeholder
+    setInterval(() => {
+        // Animation effect for metrics
+        document.querySelectorAll('.animate-pulse').forEach(el => {
+            el.style.opacity = '0.5';
+            setTimeout(() => el.style.opacity = '1', 500);
+        });
+    }, 10000);
+</script>
+{% endblock %}

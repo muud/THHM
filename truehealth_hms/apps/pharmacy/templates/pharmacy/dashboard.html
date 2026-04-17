@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Pharmacy & Prescriptions | TrueHealth HMS{% endblock %}
+
+{% block extra_css %}
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<style>
+  body { font-family: 'Inter', sans-serif; background: #f8fafc; }
+  .pharm-card { background: white; border-radius: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; }
+  .inventory-dot { width: 8px; height: 8px; border-radius: 9999px; display: inline-block; }
+  .progress-bg { height: 10px; background: #e2e8f0; border-radius: 5px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 5px; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 py-8">
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-slate-800">Pharmacy Center</h1>
+    <div class="flex gap-4 mt-2">
+      <span class="text-blue-600 bg-blue-50 px-3 py-1 rounded-lg text-sm font-semibold">User: {{ request.user.get_role_display|default:"Patient" }}</span>
+      <span class="text-slate-500 text-sm">Oct 06, 2026 • Real-time inventory & prescriptions</span>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+    
+    <!-- Left Column: Prescriptions & Refills (Patient Focus) -->
+    <div class="lg:col-span-7 space-y-6">
+      <div class="flex justify-between items-center">
+        <h2 class="text-xl font-bold text-slate-700">Active Prescriptions</h2>
+        <button class="text-blue-600 text-sm font-semibold hover:underline">Request New Refill</button>
+      </div>
+
+      <!-- Prescription Card -->
+      <div class="pharm-card p-6">
+        <div class="flex justify-between items-start mb-4">
+          <div class="flex items-center gap-4">
+            <div class="p-3 bg-blue-50 text-blue-600 rounded-xl"><i class="fas fa-capsules text-xl"></i></div>
+            <div>
+              <h3 class="font-bold text-slate-800">Amoxicillin 500mg</h3>
+              <p class="text-xs text-slate-500 uppercase tracking-widest">Infectious Disease Dept.</p>
+            </div>
+          </div>
+          <span class="bg-green-100 text-green-700 text-[10px] font-bold px-2 py-1 rounded uppercase">Current</span>
+        </div>
+        
+        <div class="grid grid-cols-3 gap-4 mb-4">
+          <div class="bg-slate-50 p-3 rounded-xl text-center">
+            <p class="text-[10px] text-slate-400 font-bold uppercase">Dosage</p>
+            <p class="text-sm font-bold text-slate-700">1x Bi-Daily</p>
+          </div>
+          <div class="bg-slate-50 p-3 rounded-xl text-center">
+            <p class="text-[10px] text-slate-400 font-bold uppercase">Remaining</p>
+            <p class="text-sm font-bold text-slate-700">14 / 30 Tabs</p>
+          </div>
+          <div class="bg-slate-50 p-3 rounded-xl text-center">
+            <p class="text-[10px] text-slate-400 font-bold uppercase">Next Dose</p>
+            <p class="text-sm font-bold text-blue-600">08:00 PM</p>
+          </div>
+        </div>
+
+        <div class="progress-bg mb-2">
+          <div class="progress-fill bg-blue-500" style="width: 46%"></div>
+        </div>
+        <p class="text-[10px] text-slate-400">Prescribed by Dr. Mwangi • Valid until Nov 12, 2026</p>
+        
+        <div class="mt-6 flex gap-3">
+          <button class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-xl text-sm font-bold shadow-sm transition">
+            Order Refill
+          </button>
+          <button class="flex-1 bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 py-2 rounded-xl text-sm font-bold transition">
+            View Instructions
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Pharmacy Operations & Inventory (Pharmacist Focus) -->
+    <div class="lg:col-span-5 space-y-6">
+      <h2 class="text-xl font-bold text-slate-700">Pharmacy Operations</h2>
+      
+      <!-- Pending Dispensing Table -->
+      <div class="pharm-card overflow-hidden">
+        <div class="p-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
+          <span class="text-xs font-bold text-slate-500 uppercase">Queue: 4 Pending</span>
+          <button class="text-blue-600 text-xs font-bold">Manage All →</button>
+        </div>
+        <table class="w-full text-left">
+          <tbody class="divide-y divide-slate-100 italic text-xs">
+            <tr class="hover:bg-slate-50 transition">
+              <td class="px-4 py-3"><span class="font-bold text-slate-700">Samuel K.</span> <br> Metformin 500</td>
+              <td class="px-4 py-3 text-right"><span class="text-green-600 font-bold">New Prep</span></td>
+              <td class="px-4 py-3 text-right"><button class="bg-blue-100 text-blue-700 p-2 rounded-lg hover:bg-blue-200"><i class="fas fa-check"></i></button></td>
+            </tr>
+            <tr class="hover:bg-slate-50 transition">
+              <td class="px-4 py-3"><span class="font-bold text-slate-700">Zainab O.</span> <br> Insulin Pen</td>
+              <td class="px-4 py-3 text-right"><span class="text-amber-600 font-bold">Insurance Verify</span></td>
+              <td class="px-4 py-3 text-right"><button class="bg-blue-100 text-blue-700 p-2 rounded-lg"><i class="fas fa-check"></i></button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Critical Inventory Alerts -->
+      <div class="pharm-card p-6">
+        <h3 class="font-bold text-slate-800 mb-4 flex items-center">
+          <i class="fas fa-exclamation-triangle text-amber-500 mr-2"></i> Low Stock Alerts
+        </h3>
+        <div class="space-y-4">
+          <div class="flex justify-between items-center">
+            <div class="flex items-center gap-2">
+              <span class="inventory-dot bg-red-500"></span>
+              <span class="text-sm font-medium text-slate-700">Paracetamol Syrup</span>
+            </div>
+            <span class="text-xs font-bold text-red-600">8 Units</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <div class="flex items-center gap-2">
+              <span class="inventory-dot bg-amber-500"></span>
+              <span class="text-sm font-medium text-slate-700">Aspirin 81mg</span>
+            </div>
+            <span class="text-xs font-bold text-amber-600">22 Units</span>
+          </div>
+        </div>
+        <button class="w-full mt-6 bg-slate-800 hover:bg-slate-900 text-white py-2 rounded-xl text-xs font-bold shadow-sm transition">
+          Generate Supply Request
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

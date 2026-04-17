@@ -1,0 +1,33 @@
+# --- Python / Django ---
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+db.sqlite3
+staticfiles/
+media/
+
+# --- Node / React ---
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# --- System / IDE ---
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*.bak
+
+# --- Logs & Temp ---
+*.log
+truehealth_hms/auth_audit.py
+truehealth_hms/test_safeguards.py
+deployment_guide.md
+implementation_plan.md
+task.md
+walkthrough.md

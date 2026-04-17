@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TrueHealth – Premium Health Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #064E3B;
+      --primary-light: #065F46;
+      --secondary: #10B981;
+      --accent: #F59E0B;
+      --bg-main: #F9FAFB;
+      --bg-sidebar: #064E3B;
+      --text-main: #111827;
+      --text-muted: #6B7280;
+      --sidebar-text: #ECFDF5;
+      --sidebar-hover: #065F46;
+      --card-bg: #FFFFFF;
+      --border-color: #E5E7EB;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --sidebar-width: 260px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg-main);
+      color: var(--text-main);
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* --- Sidebar --- */
+    aside#sidebar {
+      width: var(--sidebar-width);
+      background: var(--bg-sidebar);
+      color: var(--sidebar-text);
+      display: flex;
+      flex-direction: column;
+      padding: 2rem 1rem;
+      transition: all 0.3s ease;
+      flex-shrink: 0;
+    }
+
+    .brand {
+      font-size: 1.5rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 2.5rem;
+      padding: 0 0.5rem;
+    }
+
+    .nav-menu {
+      list-style: none;
+      flex-grow: 1;
+    }
+
+    .nav-item {
+      margin-bottom: 0.5rem;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      color: var(--sidebar-text);
+      text-decoration: none;
+      border-radius: 0.5rem;
+      font-weight: 500;
+      transition: background 0.2s;
+      cursor: pointer;
+    }
+
+    .nav-link:hover, .nav-link.active {
+      background: var(--sidebar-hover);
+    }
+
+    .nav-link-bottom {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* --- Main Content Area --- */
+    main#app-container {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    header#main-header {
+      background: #fff;
+      height: 70px;
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-color);
+      flex-shrink: 0;
+    }
+
+    .search-bar {
+      background: #F3F4F6;
+      border: 1px solid var(--border-color);
+      padding: 0.6rem 1rem;
+      border-radius: 2rem;
+      width: 300px;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .profile-info {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+
+    .avatar {
+      width: 36px;
+      height: 36px;
+      background: #10B981;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: bold;
+    }
+
+    #content-area {
+      padding: 2rem;
+      overflow-y: auto;
+      flex-grow: 1;
+    }
+
+    /* --- Common Component Styles --- */
+    .section {
+      display: none; /* Controlled by JS */
+      animation: fadeIn 0.3s ease;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h1, h2, h3 {
+      color: var(--primary);
+      margin-bottom: 1.5rem;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .card:hover {
+      box-shadow: var(--shadow-md);
+    }
+
+    .grid {
+      display: grid;
+      gap: 1.5rem;
+    }
+
+    .grid-2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+    .grid-3 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background: #F9FAFB;
+      border: 1px solid #E5E7EB;
+      border-radius: 0.5rem;
+      margin-bottom: 1rem;
+      font-family: inherit;
+      outline: none;
+      transition: border 0.2s;
+    }
+
+    input:focus {
+      border-color: var(--secondary);
+    }
+
+    .button-primary {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 0.8rem 1.5rem;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .button-primary:hover {
+      background: var(--primary-light);
+      transform: translateY(-1px);
+    }
+
+    .button-secondary {
+      background: #F3F4F6;
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      padding: 0.5rem 1rem;
+      border-radius: 0.4rem;
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    .tooltip {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      display: block;
+    }
+
+    /* Bento Grid Dashboard Specifics */
+    .bento-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: auto;
+      gap: 1.5rem;
+    }
+
+    .bento-large { grid-column: span 2; grid-row: span 2; }
+    .bento-wide { grid-column: span 2; }
+
+    /* --- Icons (Placeholders) --- */
+    .icon { font-style: normal; width: 20px; text-align: center; }
+
+    @media (max-width: 768px) {
+      aside#sidebar { display: none; } /* Handle mobile sidebar later */
+      header#main-header { padding: 0 1rem; }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- SIDEBAR -->
+  <aside id="sidebar">
+    <div class="brand">
+      <i class="icon">💚</i> TrueHealth
+    </div>
+    <ul class="nav-menu">
+      <li class="nav-item">
+        <a class="nav-link active" onclick="showSection('dashboard')"><i class="icon">📊</i> Dashboard</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" onclick="showSection('booking')"><i class="icon">📅</i> Appointments</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" onclick="showSection('lab')"><i class="icon">🧪</i> Lab Results</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" onclick="showSection('prescription')"><i class="icon">💊</i> Pharmacy</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" onclick="showSection('radiology')"><i class="icon">🦴</i> Radiology</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" onclick="showSection('maternity')"><i class="icon">🤱</i> Maternity</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" onclick="showSection('immunisation')"><i class="icon">🩹</i> Kids Care</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" onclick="showSection('insurance')"><i class="icon">🛡️</i> Insurance</a>
+      </li>
+    </ul>
+
+    <div class="nav-link-bottom">
+      <a class="nav-link" onclick="showSection('login')"><i class="icon">👤</i> Profile Settings</a>
+      <a class="nav-link" onclick="showSection('welcome')"><i class="icon">🚪</i> Logout</a>
+    </div>
+  </aside>
+
+  <main id="app-container">
+    <header id="main-header">
+      <div class="search-bar">
+        <i class="icon">🔍</i> Search your health records...
+      </div>
+      <div class="header-actions">
+        <span>🔔</span>
+        <div class="profile-info">
+          <div class="avatar">MA</div>
+          <span>Moha Abi</span>
+        </div>
+      </div>
+    </header>
+
+    <div id="content-area">
+
+      <!-- 1. Welcome Screen (Landing) -->
+      <section class="section" id="welcome">
+        <h1>Welcome to TrueHealth</h1>
+        <div class="card">
+           <p>We’re here to listen, heal, and support you – every step of the way.</p>
+           <p style="margin-bottom: 2rem;">No medical jargon. No rushed decisions. Just clear, compassionate care.</p>
+           <button class="button-primary" onclick="showSection('register')">Start my health journey →</button>
+        </div>
+      </section>
+
+      <!-- 2. Login Screen -->
+      <section class="section" id="login">
+        <h2>Welcome back</h2>
+        <div class="card" style="max-width: 500px;">
+          <input type="email" placeholder="Email address" value="mohaabik@gmail.com"/>
+          <input type="password" placeholder="Password" value="*********"/>
+          <small class="tooltip">Your password is private – we never share it.</small>
+          <a href="#" style="font-size:0.9rem; display:block; margin: 1rem 0;">Forgot your password? We’ll help you reset it.</a>
+          <button class="button-primary" onclick="showSection('dashboard')">Log in securely</button>
+        </div>
+      </section>
+
+      <!-- 3. Registration Form -->
+      <section class="section" id="register">
+        <h2>Let’s get you registered.</h2>
+        <p class="tooltip" style="margin-bottom: 1.5rem;">Take your time – you can save and come back later.</p>
+        <div class="grid grid-2">
+          <div class="card">
+            <label>Identification</label>
+            <input placeholder="Full name" value="Moha Abi" />
+            <input type="date" placeholder="Date of birth" />
+            <select><option>Gender</option><option>Male</option><option>Female</option></select>
+            <input placeholder="NHIF number (optional)" />
+          </div>
+          <div class="card">
+            <label>Contact Details</label>
+            <input placeholder="Mobile phone" />
+            <input placeholder="Email address" />
+            <input placeholder="Emergency contact" />
+          </div>
+        </div>
+        <button class="button-primary" style="margin-top:2rem;" onclick="showSection('dashboard')">Register & continue →</button>
+      </section>
+
+      <!-- 4. Patient Dashboard (Bento Grid) -->
+      <section class="section active" id="dashboard">
+        <h2>Your Health Overview</h2>
+        <div class="bento-grid">
+          <!-- Readiness Score (large) -->
+          <div class="card bento-large" style="background: linear-gradient(135deg, #064E3B 0%, #10B981 100%); color: #fff;">
+            <h3 style="color: #fff;">Daily Readiness Score</h3>
+            <div style="font-size: 4rem; font-weight: 700; margin: 1.5rem 0;">84</div>
+            <p>You're in great shape today! Good, but remember to take occasional breaks.</p>
+            <small style="opacity: 0.8; margin-top: 1rem; display: block;">Combines sleep, activity, and recent symptoms.</small>
+          </div>
+          
+          <!-- Next Appointment -->
+          <div class="card bento-wide">
+            <h3>Next Appointment</h3>
+            <p style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem;">General Check‑up</p>
+            <p class="tooltip">📅 12 Oct 2026, 10:00 AM</p>
+            <div style="margin-top: 1.5rem; display: flex; gap: 1rem;">
+               <button class="button-primary">Join Room</button>
+               <button class="button-secondary">Reschedule</button>
+            </div>
+          </div>
+
+          <!-- Quick Stats -->
+          <div class="card">
+            <h4>Lab Result</h4>
+            <p style="font-weight: bold; color: #10B981; margin: 0.5rem 0;">12.5 g/dL</p>
+            <p class="tooltip">Haemoglobin – Normal</p>
+          </div>
+          <div class="card">
+            <h4>Medication</h4>
+            <p style="font-weight: bold; color: #F59E0B; margin: 0.5rem 0;">2h left</p>
+            <p class="tooltip">Amoxicillin – 1 tablet</p>
+          </div>
+          <div class="card">
+            <h4>Immunisation</h4>
+            <p style="font-weight: bold; margin: 0.5rem 0;">Polio 1</p>
+            <p class="tooltip">Due in 5 days</p>
+          </div>
+          <div class="card">
+            <h4>Steps</h4>
+            <p style="font-weight: bold; color: var(--primary); margin: 0.5rem 0;">4,200</p>
+            <p class="tooltip">Keep moving!</p>
+          </div>
+
+          <!-- Trends (wide) -->
+          <div class="card bento-wide">
+            <h3>Health Trends</h3>
+            <div style="height: 120px; background: #f0fdf4; border-radius: 0.5rem; display: flex; align-items: center; justify-content: center; color: #059669; border: 1px dashed #059669;">
+               [ Blood Pressure Trend Chart Visualization ]
+            </div>
+          </div>
+
+          <!-- Insurance -->
+          <div class="card">
+            <h4>Insurance</h4>
+            <p style="font-weight: bold; margin: 0.5rem 0;">KSh 12,500</p>
+            <p class="tooltip">Cover remaining</p>
+          </div>
+
+          <!-- Quick Actions -->
+          <div class="card">
+            <h4>Quick Actions</h4>
+            <div style="display: grid; gap: 0.5rem; margin-top: 1rem;">
+               <button class="button-primary" style="padding: 0.5rem; font-size: 0.8rem;">Book Appointment</button>
+               <button class="button-secondary" style="padding: 0.5rem; font-size: 0.8rem;">Message Doctor</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5. Appointment Booking Flow -->
+      <section class="section" id="booking">
+        <h2>Schedule an Appointment</h2>
+        <div class="card">
+          <h3>1. Choose Department</h3>
+          <div class="grid grid-3" style="margin-top: 1rem;">
+            <button class="button-secondary p-4">General Check‑up</button>
+            <button class="button-secondary p-4">Maternity</button>
+            <button class="button-secondary p-4">Optometry</button>
+            <button class="button-secondary p-4">Immunisation</button>
+          </div>
+        </div>
+        <div class="grid grid-2" style="margin-top: 1.5rem;">
+          <div class="card">
+            <h3>2. Choose Doctor</h3>
+            <p>Dr. Amina Yusuf</p>
+            <small class="tooltip">Focus: General Family Medicine • 4.9⭐</small>
+          </div>
+          <div class="card">
+            <h3>3. Pick Date & Time</h3>
+            <p>12 Oct 2026 – 10:00 AM</p>
+            <button class="button-secondary" style="margin-top: 0.5rem;">View Calendar</button>
+          </div>
+        </div>
+        <div class="card" style="margin-top: 1.5rem; border: 2px solid #10B981;">
+          <h3>Confirm Your Visit</h3>
+          <p>You’re booking a General Check‑up with Dr. Amina Yusuf.</p>
+          <button class="button-primary" style="margin-top: 1rem;">Confirm my appointment</button>
+        </div>
+      </section>
+
+      <!-- 6. Lab Test Experience -->
+      <section class="section" id="lab">
+        <h2>Laboratory Services</h2>
+        <div class="grid grid-2">
+          <div class="card">
+             <h3>Request New Test</h3>
+             <p class="tooltip">Blood sugar (glucose), Malaria RDT, etc.</p>
+             <button class="button-primary" style="margin-top: 1rem;">Order Test</button>
+          </div>
+          <div class="card">
+             <h3>Preparation Guide</h3>
+             <p>Blood: fast 8h. Urine: first-morning sample.</p>
+          </div>
+        </div>
+        <div class="card" style="margin-top: 2rem;">
+          <h3>Recent Lab Results</h3>
+          <table style="width: 100%; border-collapse: collapse; margin-top: 1rem;">
+             <tr style="border-bottom: 2px solid #eee; text-align: left;">
+                <th style="padding: 1rem 0;">Test Name</th>
+                <th>Result</th>
+                <th>Status</th>
+             </tr>
+             <tr>
+                <td style="padding: 1rem 0;">Haemoglobin</td>
+                <td>12.5 g/dL</td>
+                <td style="color: #10B981; font-weight: bold;">Normal</td>
+             </tr>
+          </table>
+        </div>
+      </section>
+
+      <!-- 7. Prescription Experience -->
+      <section class="section" id="prescription">
+        <h2>Pharmacy & Prescriptions</h2>
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: start;">
+            <div>
+              <h3>Amoxicillin 500mg</h3>
+              <p>Take 1 tablet twice daily for 5 days.</p>
+              <p class="tooltip" style="color: #F59E0B; font-weight: bold;">Remaining: 8 tablets</p>
+            </div>
+            <button class="button-primary">Refill Now</button>
+          </div>
+        </div>
+        <div class="card" style="margin-top: 1.5rem; background: #ECFDF5;">
+          <h3>Dispensing Tracking</h3>
+          <p>✅ Your medicine is ready for pickup at the TrueHealth Pharmacy counter.</p>
+        </div>
+      </section>
+
+      <!-- 8. Radiology (X‑ray) -->
+      <section class="section" id="radiology">
+        <h2>Radiology</h2>
+        <div class="card">
+           <h3>Active Orders</h3>
+           <p>Chest X‑ray – Standard View</p>
+           <p class="tooltip">No special preparation needed. Please remove jewellery.</p>
+           <button class="button-secondary" style="margin-top: 1rem;">View Instructions</button>
+        </div>
+        <div class="card" style="margin-top: 1.5rem;">
+           <h3>Image Library</h3>
+           <p>Chest X-Ray (12/10/2026)</p>
+           <p class="tooltip">Impression: Normal chest X-ray. No fractures found.</p>
+           <button class="button-secondary">Download Report</button>
+        </div>
+      </section>
+
+      <!-- 9. Maternity Care -->
+      <section class="section" id="maternity">
+        <h2>Maternity Journey</h2>
+        <div class="card" style="border-left: 5px solid var(--secondary);">
+           <h3>ANC Tracker</h3>
+           <p>Week 24 – Pregnancy journey.</p>
+           <p class="tooltip">Next check‑up: 20 Oct 2026 – BP & Fetal HR.</p>
+        </div>
+        <div class="card" style="margin-top: 1.5rem;">
+           <h3>Labour Prep Checklist</h3>
+           <ul>
+             <li>NHIF card / ID</li>
+             <li>Baby clothes & diapers</li>
+             <li>Phone charger</li>
+           </ul>
+        </div>
+      </section>
+
+      <!-- 10. Immunisation (Kids) -->
+      <section class="section" id="immunisation">
+        <h2>Childhood Immunisation</h2>
+        <div class="card">
+           <h3>Schedule for 'Baby A'</h3>
+           <div style="display: flex; gap: 1rem; flex-direction: column; margin-top: 1rem;">
+             <div style="display: flex; justify-content: space-between; padding: 0.75rem; background: #f0fdf4; border-radius: 0.5rem;">
+               <span>BCG (Birth)</span>
+               <span style="color: #10B981; font-weight: bold;">Completed ✓</span>
+             </div>
+             <div style="display: flex; justify-content: space-between; padding: 0.75rem; background: #fffbeb; border-radius: 0.5rem;">
+               <span>Polio 1 (6 Weeks)</span>
+               <button class="button-primary" style="padding: 0.2rem 0.5rem; font-size: 0.8rem;">Schedule</button>
+             </div>
+           </div>
+        </div>
+      </section>
+
+      <!-- 11. Insurance & Billing -->
+      <section class="section" id="insurance">
+        <h2>Insurance & Billing</h2>
+        <div class="grid grid-2">
+          <div class="card">
+             <h3>Active Plan</h3>
+             <p>TrueHealth Care Plus</p>
+             <p class="tooltip">Renewal Date: 31 Dec 2026</p>
+             <button class="button-secondary" style="margin-top: 1rem;">View Details</button>
+          </div>
+          <div class="card" style="background: #FEF2F2;">
+             <h3>Balance Due</h3>
+             <p style="font-size: 1.5rem; font-weight: bold; color: #DC2626;">KSh 1,500</p>
+             <button class="button-primary" style="background: #DC2626; margin-top: 1rem;">Pay Now</button>
+          </div>
+        </div>
+      </section>
+
+       <!-- Extras: Errors & Success (Hidden usually, but here for demo) -->
+       <section class="section" id="debug">
+          <h2>UI Messaging Samples</h2>
+          <div class="card" style="border-left: 5px solid #DC2626; margin-bottom: 1rem;">
+             <p style="color: #DC2626; font-weight: bold;">Form Validation Error</p>
+             <p>We missed your [field name]. Could you fill it in?</p>
+          </div>
+          <div class="card" style="border-left: 5px solid #10B981;">
+             <p style="color: #10B981; font-weight: bold;">Success Confirmation</p>
+             <p>Confirmed. We’ve sent a reminder to your phone.</p>
+          </div>
+       </section>
+
+    </div>
+  </main>
+
+  <script>
+    function showSection(sectionId) {
+      // Hide all sections
+      const sections = document.querySelectorAll('.section');
+      sections.forEach(s => s.classList.remove('active'));
+
+      // Show the selected one
+      const target = document.getElementById(sectionId);
+      if (target) {
+        target.classList.add('active');
+        
+        // Find links in sidebar and update active state
+        const navLinks = document.querySelectorAll('.nav-link');
+        navLinks.forEach(link => {
+          link.classList.remove('active');
+          if (link.getAttribute('onclick') && link.getAttribute('onclick').includes(sectionId)) {
+            link.classList.add('active');
+          }
+        });
+
+        // Close sidebar on mobile (if we add toggle logic)
+      }
+    }
+  </script>
+</body>
+
+</html>

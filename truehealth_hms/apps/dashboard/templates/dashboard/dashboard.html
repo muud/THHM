@@ -1,0 +1,343 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Smart Dashboard | TrueHealth{% endblock %}
+
+{% block extra_css %}
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  /* Dashboards use global base.html styles for premium branding */
+  
+  @keyframes shimmer {
+    0% { background-position: -200% center; }
+    100% { background-position: 200% center; }
+  }
+  .animate-shimmer {
+    background-size: 200% auto;
+    animation: shimmer 8s linear infinite;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="glass-container mb-24 max-w-4xl mx-auto">
+  <!-- Premium Hero Section -->
+  <div class="hero-card rounded-[2.5rem] p-10 mb-10 text-white shadow-2xl relative overflow-hidden group">
+    <div class="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-transparent"></div>
+    <div class="flex justify-between items-start relative z-10">
+      <div class="flex-1">
+        <h1 class="text-5xl font-black brand-text mb-3 tracking-tight">Hello, <span class="bg-clip-text text-transparent bg-gradient-to-r from-white via-blue-100 to-white animate-shimmer inline-block">{{ request.user.get_full_name|default:request.user.username }}</span></h1>
+        <p class="slogan-text opacity-90 font-medium">"Your Health is Our Mission"</p>
+        
+        <div class="mt-8 flex gap-3">
+          <div class="px-4 py-2 bg-white/10 backdrop-blur-md rounded-xl border border-white/20 text-xs font-bold uppercase tracking-widest">
+            Member ID: #TH-{{ request.user.id|add:1024 }}
+          </div>
+          <div class="px-4 py-2 bg-white/10 backdrop-blur-md rounded-xl border border-white/20 text-xs font-bold uppercase tracking-widest text-blue-200">
+            Gold Tier Status
+          </div>
+        </div>
+      </div>
+      <div class="group relative">
+        <div class="w-20 h-20 rounded-3xl bg-white/10 backdrop-blur-2xl flex items-center justify-center text-white text-3xl font-black shadow-2xl border-2 border-white/30 transform group-hover:scale-110 group-hover:rotate-6 transition-all duration-700 ease-out">
+          {{ request.user.username|slice:":1"|upper }}
+        </div>
+        <div class="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 border-4 border-blue-900 rounded-full shadow-xl"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bento Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 auto-rows-min">
+
+    <!-- Readiness Score + AI Insight -->
+    <div class="col-span-2 glass-card p-5 flex flex-col sm:flex-row justify-between items-center gap-4">
+      <div class="flex flex-col items-center sm:items-start">
+        <span class="text-gray-500 text-sm font-medium">Daily Readiness</span>
+        <div class="relative w-28 h-28 sm:w-32 sm:h-32">
+          <canvas id="readinessCanvas" width="120" height="120" class="w-full h-full"></canvas>
+          <div class="absolute inset-0 flex flex-col items-center justify-center">
+            <span class="text-3xl font-bold text-gray-800" id="readinessValue">84</span>
+            <span class="text-xs text-gray-500">/100</span>
+          </div>
+        </div>
+        <div class="mt-2 text-center sm:text-left">
+          <p class="font-semibold text-green-600" id="readinessStatus">Optimum</p>
+          <div class="flex gap-2 text-xs text-gray-500 mt-1">
+            <span><i class="fas fa-moon"></i> Sleep: 7h 52m</span>
+            <span><i class="fas fa-walking"></i> Activity: 4.2k</span>
+            <span><i class="fas fa-head-side-medical"></i> Symptoms: Mild</span>
+          </div>
+        </div>
+      </div>
+      <div class="bg-blue-50/50 rounded-2xl p-3 w-full sm:w-64">
+        <p class="text-xs text-blue-700 font-medium"><i class="fas fa-robot"></i> AI Insight</p>
+        <p class="text-sm text-gray-700" id="aiInsight">Your consistent sleep this week is boosting your readiness. A light 30‑minute walk is recommended today.</p>
+      </div>
+    </div>
+
+    <!-- Active Medication Bar -->
+    <div class="col-span-2 glass-card p-4 flex flex-wrap justify-between items-center gap-3">
+      <div>
+        <p class="text-xs text-gray-500 uppercase tracking-wide">Next medication</p>
+        <p class="font-semibold text-gray-800">Amoxicillin 500mg</p>
+        <p class="text-sm text-gray-600">1 tablet twice daily · <span id="countdown" class="font-mono text-blue-600">2h 15m</span></p>
+        <p class="text-xs text-gray-500 mt-1">Adherence this week: 92% <span class="text-green-600">▲</span></p>
+      </div>
+      <button id="markTakenBtn" class="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-full text-sm font-medium shadow-sm transition"><i class="fas fa-check-circle mr-1"></i> Mark taken</button>
+    </div>
+
+    <!-- Quick Action Buttons -->
+    <div class="col-span-2 glass-card p-4">
+      <div class="grid grid-cols-2 gap-2">
+        <button id="bookApptBtn" class="bg-blue-600 text-white py-2 rounded-xl text-sm font-medium">📅 Book Appointment</button>
+        <button id="requestLabBtn" class="bg-blue-600 text-white py-2 rounded-xl text-sm font-medium">🧪 Request Lab Test</button>
+        <button id="requestRefillBtn" class="bg-blue-600 text-white py-2 rounded-xl text-sm font-medium">💊 Request Refill</button>
+        <button id="messageDoctorBtn" class="bg-blue-600 text-white py-2 rounded-xl text-sm font-medium">💬 Message Doctor</button>
+        <button id="logSymptomBtn" class="bg-blue-600 text-white py-2 rounded-xl text-sm font-medium">📝 Log Symptom</button>
+        <button id="viewAppointmentsBtn" class="bg-gray-200 text-gray-800 py-2 rounded-xl text-sm font-medium">📋 My Appointments</button>
+        <button id="viewLabResultsBtn" class="bg-gray-200 text-gray-800 py-2 rounded-xl text-sm font-medium">🔬 My Lab Results</button>
+        <button id="viewPrescriptionsBtn" class="bg-gray-200 text-gray-800 py-2 rounded-xl text-sm font-medium">💊 My Prescriptions</button>
+        <button id="viewBillingBtn" class="bg-gray-200 text-gray-800 py-2 rounded-xl text-sm font-medium">💳 My Billing</button>
+      </div>
+    </div>
+
+    <!-- Lab Result Snapshot -->
+    <div class="glass-card p-4">
+      <span class="text-gray-500 text-xs">Last Lab Result</span>
+      <p class="text-xl font-bold text-gray-800">Hemoglobin 12.5 <span class="text-sm font-normal">g/dL</span></p>
+      <p class="text-xs text-green-600">Normal range</p>
+      <canvas id="hgbSpark" width="80" height="32" class="sparkline mt-1"></canvas>
+      <button class="mt-2 text-blue-600 text-xs font-medium block" id="openLabReportBtn">Open detailed report →</button>
+    </div>
+
+    <!-- Insurance Summary -->
+    <div class="glass-card p-4">
+      <span class="text-gray-500 text-xs">TrueHealth Care</span>
+      <p class="text-xl font-bold text-gray-800">KSh 12,500</p>
+      <p class="text-xs text-gray-500">Cover remaining · Valid until Dec 31, 2026</p>
+      <button id="renewPolicyBtn" class="mt-2 text-blue-600 text-xs font-medium">Renew policy</button>
+    </div>
+  </div>
+</div>
+
+  <!-- Global nav powered by base.html -->
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // ========== Helper functions ==========
+  async function apiCall(url, data) {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) throw new Error(await res.text());
+    return res.json();
+  }
+
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+
+  // ========== Readiness Ring ==========
+  const canvas = document.getElementById('readinessCanvas');
+  const ctx = canvas.getContext('2d');
+  const value = 84;
+  const percent = value / 100;
+  canvas.width = 120; canvas.height = 120;
+  function drawRing() {
+    ctx.clearRect(0, 0, 120, 120);
+    ctx.beginPath();
+    ctx.arc(60, 60, 50, 0, 2 * Math.PI);
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.lineWidth = 10;
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(60, 60, 50, -Math.PI/2, (2 * Math.PI * percent) - Math.PI/2);
+    ctx.strokeStyle = value >= 80 ? '#10b981' : (value >= 60 ? '#f59e0b' : '#ef4444');
+    ctx.stroke();
+  }
+  drawRing();
+
+  // ========== Sparkline ==========
+  function drawSpark(id, data, color) {
+    const c = document.getElementById(id);
+    if (!c) return;
+    const w = c.width, h = c.height;
+    const ctx2 = c.getContext('2d');
+    ctx2.clearRect(0, 0, w, h);
+    const step = w / (data.length - 1);
+    const min = Math.min(...data);
+    const max = Math.max(...data);
+    const range = max - min || 1;
+    ctx2.beginPath();
+    ctx2.moveTo(0, h - ((data[0] - min) / range) * h);
+    for (let i = 1; i < data.length; i++) {
+      ctx2.lineTo(i * step, h - ((data[i] - min) / range) * h);
+    }
+    ctx2.strokeStyle = color;
+    ctx2.lineWidth = 2;
+    ctx2.stroke();
+  }
+  drawSpark('hgbSpark', [12.1, 12.3, 12.0, 12.4, 12.5, 12.5, 12.5], '#10b981');
+
+  // ========== Countdown ==========
+  let timeLeft = 2 * 3600 + 15 * 60;
+  const countdownEl = document.getElementById('countdown');
+  function updateCountdown() {
+    if (timeLeft <= 0) { countdownEl.innerText = "Due now"; return; }
+    const hours = Math.floor(timeLeft / 3600);
+    const minutes = Math.floor((timeLeft % 3600) / 60);
+    countdownEl.innerText = `${hours}h ${minutes}m`;
+    timeLeft -= 60;
+  }
+  setInterval(updateCountdown, 60000);
+  updateCountdown();
+
+  // ========== Buttons ==========
+  // Book Appointment
+  document.getElementById('bookApptBtn').addEventListener('click', async () => {
+    const specialty = prompt("Enter department (e.g., General, Maternity, Eye):");
+    if (!specialty) return;
+    try {
+      const slots = await apiCall('/api/appointments/available-slots/', { specialty });
+      if (!slots || !slots.length) { alert("No slots available"); return; }
+      let msg = "Select slot:\n";
+      slots.forEach((s, i) => { msg += `${i+1}. ${s.doctor} at ${s.datetime}\n`; });
+      const choice = prompt(msg);
+      if (choice && slots[choice-1]) {
+        await apiCall('/api/appointments/book/', { doctor_id: slots[choice-1].doctor_id, datetime: slots[choice-1].datetime });
+        alert("Appointment booked! Check your appointments.");
+        location.reload();
+      }
+    } catch(e) { alert("Error: " + e.message); }
+  });
+
+  // Request Lab Test
+  document.getElementById('requestLabBtn').addEventListener('click', async () => {
+    const test = prompt("Enter test name (e.g., Blood sugar, Malaria):");
+    if (!test) return;
+    try {
+      await apiCall('/api/lab/request/', { test_name: test });
+      alert("Lab test requested. A nurse will contact you.");
+    } catch(e) { alert("Error: " + e.message); }
+  });
+
+  // Request Refill
+  document.getElementById('requestRefillBtn').addEventListener('click', async () => {
+    const presId = prompt("Enter prescription ID (from your prescriptions list):");
+    if (!presId) return;
+    try {
+      await apiCall('/api/pharmacy/request-refill/', { prescription_id: presId });
+      alert("Refill requested. Pharmacy will prepare it.");
+    } catch(e) { alert("Error: " + e.message); }
+  });
+
+  // Message Doctor
+  document.getElementById('messageDoctorBtn').addEventListener('click', () => {
+    alert("This will open a secure chat with your doctor (coming soon).");
+  });
+
+  // Log Symptom
+  document.getElementById('logSymptomBtn').addEventListener('click', () => {
+    const symptom = prompt("What symptom are you feeling? (e.g., headache, fever, fatigue)");
+    if (symptom) alert(`Symptom "${symptom}" logged. We'll monitor your condition.`);
+  });
+
+  // View Appointments
+  document.getElementById('viewAppointmentsBtn').addEventListener('click', async () => {
+    const res = await fetch('/api/appointments/my-appointments/');
+    const data = await res.json();
+    if (!data.length) { alert("No upcoming appointments."); return; }
+    let msg = "Your appointments:\n";
+    data.forEach(a => {
+      msg += `${a.date} ${a.time} - Dr. ${a.doctor} (${a.status})\n`;
+    });
+    alert(msg);
+  });
+
+  // View Lab Results
+  document.getElementById('viewLabResultsBtn').addEventListener('click', async () => {
+    const res = await fetch('/api/lab/my-results/');
+    const data = await res.json();
+    if (!data.length) { alert("No lab results available."); return; }
+    let msg = "Lab results:\n";
+    data.forEach(r => {
+      msg += `${r.test_name}: ${r.value} ${r.unit} - ${r.interpretation}\n`;
+    });
+    alert(msg);
+  });
+
+  // View Prescriptions
+  document.getElementById('viewPrescriptionsBtn').addEventListener('click', async () => {
+    const res = await fetch('/api/pharmacy/my-prescriptions/');
+    const data = await res.json();
+    if (!data.length) { alert("No active prescriptions."); return; }
+    let msg = "Prescriptions:\n";
+    data.forEach(p => {
+      msg += `${p.drug} ${p.dosage} - ${p.remaining} days left\n`;
+    });
+    alert(msg);
+  });
+
+  // View Billing
+  document.getElementById('viewBillingBtn').addEventListener('click', async () => {
+    const res = await fetch('/billing/api/my-invoices/');
+    const data = await res.json();
+    if (!data.length) { alert("No billing records found."); return; }
+    let msg = "Your Invoices:\n";
+    data.forEach(inv => {
+      msg += `Date: ${inv.created_at} - Total: KSh ${inv.total_amount} (${inv.is_paid ? 'PAID' : 'PENDING'})\n`;
+    });
+    alert(msg);
+  });
+
+  async function initBilling() {
+    try {
+      const res = await fetch('/billing/api/my-invoices/');
+      const data = await res.json();
+      if (!data || !data.some) return;
+      const hasUnpaid = data.some(inv => !inv.is_paid);
+      if (hasUnpaid) {
+        const banner = document.createElement('div');
+        banner.className = "bg-red-500 text-white p-3 rounded-2xl mb-4 text-center font-bold animate-pulse text-xs";
+        banner.innerHTML = '<i class="fas fa-exclamation-circle mr-2"></i> Action Required: Pending Payment. Please contact the front desk.';
+        document.querySelector('.max-w-2xl').prepend(banner);
+      }
+    } catch(e) { console.error("Billing check failed", e); }
+  }
+  initBilling();
+
+  document.getElementById('openLabReportBtn')?.addEventListener('click', () => {
+    alert("Lab report dashboard will open soon.");
+  });
+
+  // Mark taken
+  document.getElementById('markTakenBtn').addEventListener('click', () => {
+    alert('✓ Medication taken. Next dose scheduled for 8:00 PM.');
+  });
+
+  // Renew policy
+  document.getElementById('renewPolicyBtn').addEventListener('click', () => {
+    alert("Renewal request sent. Admin will contact you.");
+  });
+
+  // Global FAB is now in base.html and calls local buttons via ID.
+</script>
+{% endblock %}

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TrueHealth Micro‑copy Preview</title>
+  <link rel="stylesheet" href="/index.css" />
+  <style>
+    body {font-family: 'Outfit', sans-serif; margin: 2rem; background: #f9fafb; color: #1e1e1e;}
+    .section {margin-bottom: 3rem;}
+    h2 {font-size: 1.75rem; margin-bottom: 1rem; color: var(--primary, #064E3B);}
+    table {width: 100%; border-collapse: collapse; margin-top: 1rem;}
+    th, td {padding: 0.75rem; border: 1px solid #e2e8f0; text-align: left;}
+    .button-primary {background: var(--primary, #064E3B); color: white; padding: 0.5rem 1rem; border: none; border-radius: 0.375rem; cursor: pointer;}
+    .alert {background: #fff3cd; color: #856404; padding: 0.75rem; border-radius: 0.375rem; margin-top: 0.5rem;}
+  </style>
+</head>
+<body>
+  <div class="section" id="immunisation">
+    <h2>Immunisation (Kids)</h2>
+    <p><strong>Protecting your child, one shot at a time.</strong></p>
+    <table>
+      <tr><th>Vaccine</th><th>Timing</th><th>Status / Action</th></tr>
+      <tr><td>BCG</td><td>Given at birth</td><td>Completed ✓</td></tr>
+      <tr><td>Polio 1</td><td>Due in 5 days</td><td>Schedule now</td></tr>
+    </table>
+    <p>We’ll SMS you before each vaccine is due. Confirm your phone number.</p>
+    <p>Your child received <em>{Vaccine Name}</em>. Mild fever or fussiness is normal – give plenty of fluids and cuddles. Call us if you’re worried.</p>
+  </div>
+
+  <div class="section" id="insurance-billing">
+    <h2>Insurance & Billing</h2>
+    <p><strong>Your TrueHealth Care plan – affordable peace of mind.</strong></p>
+    <p>You are covered for: Outpatient visits (KSh {outpatient_amount}), Pharmacy (KSh {pharmacy_amount}), Maternity (normal delivery – full cover).</p>
+    <button class="button-primary">Renew policy</button>
+    <p>You have an outstanding bill of KSh {outstanding_amount}. Pay securely with M‑Pesa or card.</p>
+    <p>Thank you! Your payment was received. A receipt has been emailed to you.</p>
+    <p>Your NHIF claim is being processed. Usually takes 5–7 working days.</p>
+  </div>
+
+  <div class="section" id="errors">
+    <h2>Error & Empty State Messages</h2>
+    <h3>Form Validation Errors</h3>
+    <table>
+      <tr><th>Type</th><th>Softened Message</th></tr>
+      <tr><td>Required field missing</td><td>We missed your {fieldName}. Could you fill it in? It helps us treat you safely.</td></tr>
+      <tr><td>Invalid phone number</td><td>That phone number doesn’t look right. Double‑check the digits – we need to reach you.</td></tr>
+      <tr><td>Password too weak</td><td>Choose a password that’s easy for you to remember but hard for others to guess. At least 8 letters or numbers.</td></tr>
+    </table>
+    <h3>Empty States</h3>
+    <ul>
+      <li>No appointments – You don’t have any upcoming visits. Ready to book one? We have slots tomorrow.</li>
+      <li>No lab results – No results yet. Once your doctor orders tests, they’ll appear here.</li>
+      <li>No prescriptions – You’re not taking any regular medicines right now. That’s great!</li>
+    </ul>
+    <div class="alert">We lost connection to the server. Don’t worry – your data is safe. Please check your internet and try again.</div>
+  </div>
+
+  <div class="section" id="success">
+    <h2>Success & Confirmation Messages</h2>
+    <ul>
+      <li>Appointment booked – Confirmed. We’ve sent a reminder to your phone.</li>
+      <li>Lab test requested – Your request is received. A nurse will call you within 2 hours to confirm the sample collection time.</li>
+      <li>Prescription refill ordered – Your refill is being prepared. You’ll get an SMS when it’s ready.</li>
+      <li>Payment completed – Payment successful. Thank you for trusting us with your care.</li>
+      <li>Profile updated – Your information has been updated. If you changed your NHIF number, your claims will now use the new one.</li>
+    </ul>
+  </div>
+</body>
+</html>

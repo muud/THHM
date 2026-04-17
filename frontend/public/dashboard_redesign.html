@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>TrueHealth – Smart Dashboard</title>
+  <!-- Tailwind + Inter Font + Font Awesome -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    body { font-family: 'Inter', sans-serif; background: #f5f7fb; }
+    /* Custom glassmorphism */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(10px);
+      border-radius: 2rem;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.05), 0 2px 4px rgba(0,0,0,0.02);
+      transition: all 0.2s ease;
+    }
+    .glass-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px rgba(0,0,0,0.08);
+    }
+    .readiness-ring {
+      width: 120px;
+      height: 120px;
+    }
+    .sparkline {
+      width: 80px;
+      height: 32px;
+    }
+    /* Floating Action Button */
+    .fab {
+      position: fixed;
+      bottom: 80px;
+      right: 20px;
+      background: #2c7da0;
+      color: white;
+      border-radius: 9999px;
+      padding: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      z-index: 50;
+      transition: all 0.2s;
+    }
+    .fab:hover {
+      background: #1f5e7a;
+      transform: scale(1.05);
+    }
+    /* Bottom navigation */
+    .bottom-nav {
+      background: rgba(255,255,255,0.96);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid #eef2f6;
+    }
+    .nav-item {
+      transition: color 0.2s;
+    }
+    .nav-item.active {
+      color: #2c7da0;
+      font-weight: 600;
+    }
+    /* Tooltip styling */
+    [data-tooltip] {
+      position: relative;
+      cursor: help;
+      border-bottom: 1px dashed #94a3b8;
+    }
+    [data-tooltip]:before {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: 130%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1e293b;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+      z-index: 100;
+    }
+    [data-tooltip]:hover:before {
+      opacity: 1;
+    }
+    @media (max-width: 640px) {
+      .glass-card { border-radius: 1.5rem; }
+      .readiness-ring { width: 100px; height: 100px; }
+    }
+  </style>
+</head>
+<body class="bg-gray-50 pb-24">
+
+  <!-- Main container -->
+  <main class="max-w-2xl mx-auto px-4 pt-6 pb-20">
+    
+    <!-- Header with greeting and avatar -->
+    <div class="flex justify-between items-center mb-6">
+      <div>
+        <h1 class="text-2xl font-bold text-gray-800">Hello, James</h1>
+        <p class="text-gray-500 text-sm">Here's your health snapshot for today</p>
+      </div>
+      <div class="w-10 h-10 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 flex items-center justify-center text-white font-bold">
+        J
+      </div>
+    </div>
+
+    <!-- ========== 1. UNIFIED SMART DASHBOARD (Bento Grid) ========== -->
+    <div class="grid grid-cols-2 gap-4 auto-rows-min">
+      
+      <!-- Daily Readiness Ring -->
+      <div class="col-span-2 glass-card p-5 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div class="flex flex-col items-center sm:items-start">
+          <span class="text-gray-500 text-sm font-medium" data-tooltip="Combines sleep, activity, and symptom data">Daily Readiness</span>
+          <div class="relative readiness-ring mt-2">
+            <canvas id="readinessCanvas" width="120" height="120" class="w-28 h-28 sm:w-32 sm:h-32"></canvas>
+            <div class="absolute inset-0 flex flex-col items-center justify-center">
+              <span class="text-3xl font-bold text-gray-800" id="readinessValue">84</span>
+              <span class="text-xs text-gray-500">/100</span>
+            </div>
+          </div>
+          <div class="mt-2 text-center sm:text-left">
+            <p class="font-semibold text-green-600" id="readinessStatus">Optimum</p>
+            <div class="flex gap-2 text-xs text-gray-500 mt-1">
+              <span><i class="fas fa-moon"></i> Sleep: 7h 52m</span>
+              <span><i class="fas fa-walking"></i> Activity: 4.2k</span>
+              <span><i class="fas fa-head-side-medical"></i> Symptoms: Mild</span>
+            </div>
+          </div>
+        </div>
+        <!-- AI Insight Panel -->
+        <div class="bg-blue-50/50 rounded-2xl p-3 w-full sm:w-64">
+          <p class="text-xs text-blue-700 font-medium"><i class="fas fa-robot"></i> AI Insight</p>
+          <p class="text-sm text-gray-700" id="aiInsight">Your consistent sleep this week is boosting your readiness. A light 30‑minute walk is recommended today.</p>
+        </div>
+      </div>
+
+      <!-- Active Medication Bar -->
+      <div class="col-span-2 glass-card p-4 flex flex-wrap justify-between items-center gap-3">
+        <div>
+          <p class="text-xs text-gray-500 uppercase tracking-wide">Next medication</p>
+          <p class="font-semibold text-gray-800">Amoxicillin 500mg</p>
+          <p class="text-sm text-gray-600">1 tablet twice daily · <span id="countdown" class="font-mono text-blue-600">2h 15m</span></p>
+        </div>
+        <button id="markTakenBtn" class="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-full text-sm font-medium shadow-sm transition"><i class="fas fa-check-circle mr-1"></i> Mark as taken</button>
+      </div>
+
+      <!-- Hemoglobin result with sparkline -->
+      <div class="glass-card p-4">
+        <div class="flex justify-between items-start">
+          <div>
+            <span class="text-gray-500 text-xs">Hemoglobin</span>
+            <p class="text-2xl font-bold text-gray-800">12.5 <span class="text-sm font-normal text-gray-500">g/dL</span></p>
+            <p class="text-xs text-green-600 mt-1">Within range (12.0-16.0)</p>
+          </div>
+          <canvas id="hgbSpark" width="80" height="32" class="sparkline"></canvas>
+        </div>
+        <div class="flex justify-between text-xs text-gray-400 mt-2">
+          <span>Previous: 12.1</span>
+          <span>Trend: <span class="text-green-600">↗︎ Stable</span></span>
+        </div>
+      </div>
+
+      <!-- Blood Pressure -->
+      <div class="glass-card p-4">
+        <span class="text-gray-500 text-xs">Blood pressure</span>
+        <p class="text-2xl font-bold text-gray-800">118/76 <span class="text-sm font-normal text-gray-500">mmHg</span></p>
+        <p class="text-xs text-green-600">Ideal range</p>
+        <canvas id="bpSpark" width="80" height="32" class="sparkline mt-1"></canvas>
+      </div>
+
+      <!-- Weight trend -->
+      <div class="glass-card p-4">
+        <span class="text-gray-500 text-xs">Weight</span>
+        <p class="text-2xl font-bold text-gray-800">72.4 <span class="text-sm font-normal text-gray-500">kg</span></p>
+        <p class="text-xs text-amber-600">-0.3 kg from last week</p>
+      </div>
+
+      <!-- Lab Result Insights -->
+      <div class="glass-card p-4">
+        <div class="flex justify-between">
+          <span class="text-gray-500 text-xs">Last lab: Oct 05, 2026</span>
+          <i class="fas fa-file-alt text-blue-500"></i>
+        </div>
+        <p class="text-sm font-medium mt-1">3 results within range</p>
+        <p class="text-xs text-amber-600">1 review suggested</p>
+        <button class="mt-2 text-blue-600 text-xs font-medium">Open detailed report →</button>
+      </div>
+
+      <!-- Personalised Care Path -->
+      <div class="col-span-2 glass-card p-4">
+        <p class="text-sm font-semibold text-gray-700 mb-2"><i class="fas fa-star text-yellow-500 mr-1"></i> Personalised Care Path</p>
+        <div class="flex flex-wrap gap-3">
+          <div class="bg-gray-100 rounded-xl p-2 flex-1 min-w-[120px]">
+            <p class="text-xs text-gray-500">Post-Op Recovery</p>
+            <p class="text-sm font-medium">🚶 20-min daily walk <span class="text-green-600">(4/7 days)</span></p>
+          </div>
+          <div class="bg-gray-100 rounded-xl p-2 flex-1 min-w-[120px]">
+            <p class="text-xs text-gray-500">Symptom tracking</p>
+            <p class="text-sm font-medium">📋 Logged today ✓</p>
+          </div>
+          <div class="bg-gray-100 rounded-xl p-2 flex-1 min-w-[120px]">
+            <p class="text-xs text-gray-500">Medication adherence</p>
+            <p class="text-sm font-medium">💊 92% this week</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Health Trends Chart -->
+      <div class="col-span-2 glass-card p-4">
+        <div class="flex justify-between items-center">
+          <span class="text-sm font-medium text-gray-700">Hemoglobin trend (3 months)</span>
+          <span class="text-xs text-blue-600">View all</span>
+        </div>
+        <canvas id="trendChart" height="80" class="mt-2 w-full h-20"></canvas>
+      </div>
+    </div>
+  </main>
+
+  <!-- Floating Action Button -->
+  <button class="fab" id="fabBtn">
+    <i class="fas fa-plus text-xl"></i>
+  </button>
+
+  <!-- Bottom Navigation -->
+  <div class="fixed bottom-0 left-0 right-0 bottom-nav py-2 px-6 flex justify-around items-center max-w-2xl mx-auto rounded-t-2xl shadow-lg">
+    <a href="#" class="nav-item active flex flex-col items-center text-xs text-gray-500"><i class="fas fa-chart-line text-xl mb-1"></i> Overview</a>
+    <a href="#" class="nav-item flex flex-col items-center text-xs text-gray-500"><i class="fas fa-heartbeat text-xl mb-1"></i> Vitals</a>
+    <a href="#" class="nav-item flex flex-col items-center text-xs text-gray-500"><i class="fas fa-pills text-xl mb-1"></i> Medications</a>
+    <a href="#" class="nav-item flex flex-col items-center text-xs text-gray-500"><i class="fas fa-folder-open text-xl mb-1"></i> Records</a>
+  </div>
+
+  <script>
+    // Draw readiness ring (84/100)
+    const canvas = document.getElementById('readinessCanvas');
+    const ctx = canvas.getContext('2d');
+    const value = 84;
+    const percent = value / 100;
+    const radius = 50;
+    const circumference = 2 * Math.PI * radius;
+    function drawRing() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      // background circle
+      ctx.beginPath();
+      ctx.arc(60, 60, radius, 0, 2 * Math.PI);
+      ctx.strokeStyle = '#e2e8f0';
+      ctx.lineWidth = 10;
+      ctx.stroke();
+      // foreground arc
+      ctx.beginPath();
+      ctx.arc(60, 60, radius, -Math.PI/2, (2 * Math.PI * percent) - Math.PI/2);
+      ctx.strokeStyle = value >= 80 ? '#10b981' : (value >= 60 ? '#f59e0b' : '#ef4444');
+      ctx.stroke();
+    }
+    drawRing();
+
+    // Sparklines
+    function drawSpark(canvasId, data, color) {
+      const c = document.getElementById(canvasId);
+      if (!c) return;
+      const w = c.width, h = c.height;
+      const ctx2 = c.getContext('2d');
+      ctx2.clearRect(0, 0, w, h);
+      const step = w / (data.length - 1);
+      const min = Math.min(...data);
+      const max = Math.max(...data);
+      const range = max - min || 1;
+      ctx2.beginPath();
+      ctx2.moveTo(0, h - ((data[0] - min) / range) * h);
+      for (let i = 1; i < data.length; i++) {
+        ctx2.lineTo(i * step, h - ((data[i] - min) / range) * h);
+      }
+      ctx2.strokeStyle = color;
+      ctx2.lineWidth = 2;
+      ctx2.stroke();
+    }
+    drawSpark('hgbSpark', [12.1,12.3,12.0,12.4,12.5,12.5,12.5], '#10b981');
+    drawSpark('bpSpark', [118,119,117,118,117,118,118], '#3b82f6');
+
+    // Trend line chart
+    const trendCtx = document.getElementById('trendChart').getContext('2d');
+    new Chart(trendCtx, {
+      type: 'line',
+      data: {
+        labels: ['Jul','Aug','Sep','Oct'],
+        datasets: [{ label: 'Hb (g/dL)', data: [11.8,12.0,12.3,12.5], borderColor: '#2c7da0', tension: 0.2, fill: false }]
+      },
+      options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false } } }
+    });
+
+    // Countdown simulation
+    let timeLeft = 2 * 3600 + 15 * 60; // seconds
+    const countdownEl = document.getElementById('countdown');
+    function updateCountdown() {
+      if (timeLeft <= 0) { countdownEl.innerText = 'Due now'; return; }
+      const hrs = Math.floor(timeLeft / 3600);
+      const mins = Math.floor((timeLeft % 3600) / 60);
+      countdownEl.innerText = `${hrs}h ${mins}m`;
+      timeLeft -= 60;
+    }
+    setInterval(updateCountdown, 60000);
+    updateCountdown();
+
+    // Mark as taken button
+    document.getElementById('markTakenBtn').addEventListener('click', () => {
+      alert('✓ Medication taken. Next dose scheduled for 8:00 PM.');
+    });
+
+    // Floating action button
+    document.getElementById('fabBtn').addEventListener('click', () => {
+      const action = prompt('Quick actions: 1) Book appointment  2) Log symptom  3) Scan lab result');
+      if (action === '1') alert('Opening appointment booking...');
+      else if (action === '2') alert('Log your symptoms...');
+      else if (action === '3') alert('Launch camera to scan lab result...');
+    });
+  </script>
+</body>
+</html>

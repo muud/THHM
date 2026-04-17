@@ -1,0 +1,10 @@
+Django==4.2.7
+psycopg2-binary
+djangorestframework
+django-cors-headers
+whitenoise
+python-decouple
+Pillow
+google-generativeai
+gunicorn
+dj-database-url

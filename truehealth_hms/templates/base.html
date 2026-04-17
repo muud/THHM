@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}TrueHealth HMS{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        :root {
+            --brand-primary: #1e3a8a;
+            --brand-accent: #3b82f6;
+            --brand-mint: #d1fae5;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc;
+            min-height: 100vh;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        /* Animated Mesh Gradient Background */
+        .mesh-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(at 0% 0%, #1e3a8a15 0px, transparent 50%),
+                radial-gradient(at 50% 0%, #3b82f615 0px, transparent 50%),
+                radial-gradient(at 100% 0%, #10b98115 0px, transparent 50%),
+                radial-gradient(at 0% 100%, #3b82f615 0px, transparent 50%),
+                radial-gradient(at 50% 100%, #1e3a8a15 0px, transparent 50%),
+                radial-gradient(at 100% 100%, #10b98115 0px, transparent 50%);
+            filter: blur(100px);
+            animation: mesh-float 20s infinite alternate ease-in-out;
+        }
+
+        @keyframes mesh-float {
+            0% { transform: scale(1) translate(0px, 0px); }
+            100% { transform: scale(1.1) translate(20px, 20px); }
+        }
+
+        /* Premium Navbar */
+        .premium-nav {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 1rem 1.5rem;
+        }
+
+        .thhm-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: #1e3a8a;
+        }
+
+        .status-pulse {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 9999px;
+            box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            animation: pulse-online 2s infinite;
+        }
+
+        @keyframes pulse-online {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        .glass-container {
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+            border-radius: 3rem;
+            margin-top: 2rem;
+            padding: 2rem;
+        }
+
+        /* Global Premium Footer Nav - High Priority Fix */
+        .bottom-nav {
+            position: fixed !important;
+            bottom: 1.5rem !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            width: 90% !important;
+            max-width: 500px !important;
+            background: rgba(255, 255, 255, 0.85) !important;
+            backdrop-filter: blur(24px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.5) !important;
+            border-radius: 2rem !important;
+            display: flex !important;
+            justify-content: space-around !important;
+            align-items: center !important;
+            padding: 0.5rem 0.75rem !important;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15) !important;
+            z-index: 9999 !important;
+            pointer-events: auto !important;
+            line-height: normal !important;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: #64748b;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: all 0.3s;
+        }
+
+        .nav-item i { font-size: 1.25rem; }
+        .nav-item.active { color: #1e3a8a; }
+        .nav-item:hover { color: #3b82f6; transform: translateY(-2px); }
+
+        .fab-center {
+            position: relative;
+            top: -2.25rem;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            width: 3.5rem;
+            height: 3.5rem;
+            border-radius: 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white !important;
+            font-size: 1.25rem;
+            box-shadow: 0 10px 20px rgba(30, 58, 138, 0.4);
+            border: 4px solid #ffffff;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 10001 !important;
+            pointer-events: auto !important;
+            cursor: pointer !important;
+        }
+
+        .fab-center:hover { transform: scale(1.1) translateY(-4px); box-shadow: 0 15px 30px rgba(30, 58, 138, 0.5); }
+
+        /* ===== Global Slide-Up Panel ===== */
+        .g-panel-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 19998;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .g-panel-overlay.open { opacity: 1; pointer-events: auto; }
+
+        .g-panel {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            max-height: 88vh;
+            background: rgba(255,255,255,0.96);
+            backdrop-filter: blur(30px);
+            border-radius: 2rem 2rem 0 0;
+            box-shadow: 0 -20px 60px rgba(0,0,0,0.18);
+            z-index: 19999;
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+            overflow-y: auto;
+            padding: 0 1.25rem 6rem;
+        }
+        .g-panel.open { transform: translateY(0); }
+
+        .g-panel-handle {
+            width: 40px;
+            height: 4px;
+            background: #cbd5e1;
+            border-radius: 9999px;
+            margin: 0.75rem auto 1.25rem;
+        }
+
+        .g-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .g-panel-title {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #1e3a8a;
+            letter-spacing: -0.02em;
+        }
+        .g-panel-close {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #f1f5f9;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #64748b;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+        .g-panel-close:hover { background: #e2e8f0; color: #1e293b; }
+
+        /* ===== Vital Cards ===== */
+        .vitals-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        .vital-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 1.25rem;
+            padding: 1rem;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .vital-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+        .vital-card.critical { border-color: #fca5a5; background: #fff5f5; }
+        .vital-card.warning { border-color: #fde68a; background: #fffbeb; }
+        .vital-card.normal { border-color: #bbf7d0; background: #f0fdf4; }
+        .vital-label { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: #94a3b8; margin-bottom: 0.25rem; }
+        .vital-value { font-size: 1.6rem; font-weight: 900; color: #1e293b; letter-spacing: -0.04em; line-height: 1; }
+        .vital-unit { font-size: 0.7rem; font-weight: 600; color: #94a3b8; }
+        .vital-trend { font-size: 0.7rem; font-weight: 700; margin-top: 0.35rem; }
+        .vital-trend.up { color: #10b981; }
+        .vital-trend.down { color: #ef4444; }
+        .vital-trend.stable { color: #6366f1; }
+        .vital-spark { width: 100%; height: 28px; margin-top: 0.5rem; }
+        .vital-icon {
+            position: absolute;
+            top: 0.75rem;
+            right: 0.75rem;
+            font-size: 1.1rem;
+            opacity: 0.18;
+        }
+        .vital-card.normal .vital-icon { color: #10b981; opacity: 0.3; }
+        .vital-card.warning .vital-icon { color: #f59e0b; opacity: 0.35; }
+        .vital-card.critical .vital-icon { color: #ef4444; opacity: 0.35; }
+
+        /* AI Alert */
+        .vitals-ai-alert {
+            background: linear-gradient(135deg, #1e3a8a08 0%, #3b82f615 100%);
+            border: 1px solid #bfdbfe;
+            border-radius: 1rem;
+            padding: 0.85rem 1rem;
+            display: flex;
+            gap: 0.6rem;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+        .vitals-ai-alert i { color: #3b82f6; font-size: 1rem; margin-top: 1px; flex-shrink: 0; }
+        .vitals-ai-alert p { font-size: 0.78rem; color: #1e3a8a; line-height: 1.5; margin: 0; }
+        .vitals-ai-alert strong { font-weight: 800; }
+
+        /* History table */
+        .vitals-history-title {
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: #94a3b8;
+            margin-bottom: 0.6rem;
+        }
+        .vitals-history-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.78rem;
+            padding: 0.45rem 0;
+            border-bottom: 1px solid #f1f5f9;
+            color: #374151;
+        }
+        .vitals-history-row:last-child { border-bottom: none; }
+        .vitals-history-row .date { color: #94a3b8; font-size: 0.7rem; }
+        .vitals-badge {
+            font-size: 0.6rem;
+            font-weight: 800;
+            padding: 2px 7px;
+            border-radius: 9999px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .vitals-badge.normal { background: #dcfce7; color: #15803d; }
+        .vitals-badge.warning { background: #fef9c3; color: #92400e; }
+        .vitals-badge.critical { background: #fee2e2; color: #991b1b; }
+
+        /* Meds panel */
+        .meds-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 1.25rem;
+            padding: 1rem 1.1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.6rem;
+            transition: box-shadow 0.2s;
+        }
+        .meds-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.07); }
+        .meds-name { font-weight: 700; font-size: 0.9rem; color: #1e293b; }
+        .meds-sub { font-size: 0.72rem; color: #64748b; margin-top: 2px; }
+        .meds-pill {
+            font-size: 0.65rem;
+            font-weight: 800;
+            padding: 3px 10px;
+            border-radius: 9999px;
+            background: #dbeafe;
+            color: #1d4ed8;
+            white-space: nowrap;
+        }
+        .meds-pill.due { background: #fef3c7; color: #92400e; }
+        .meds-pill.taken { background: #d1fae5; color: #065f46; }
+
+        /* Records panel */
+        .record-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 1.25rem;
+            padding: 1rem 1.1rem;
+            margin-bottom: 0.6rem;
+            transition: box-shadow 0.2s;
+        }
+        .record-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.07); }
+        .record-title { font-weight: 700; font-size: 0.9rem; color: #1e293b; }
+        .record-meta { font-size: 0.72rem; color: #64748b; margin-top: 3px; }
+        .record-value { font-size: 1.05rem; font-weight: 800; color: #1e3a8a; margin-top: 6px; }
+        .record-interp { font-size: 0.7rem; font-weight: 700; margin-top: 2px; }
+        .record-interp.normal { color: #10b981; }
+        .record-interp.abnormal { color: #ef4444; }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="mesh-bg"></div>
+
+    <nav class="premium-nav flex justify-between items-center shadow-sm">
+        <div class="thhm-logo">
+            <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg overflow-hidden relative">
+                <!-- THHM Stylized Cross Logo (SVG) -->
+                <svg viewBox="0 0 24 24" class="w-6 h-6 fill-current">
+                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+                </svg>
+                <div class="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent"></div>
+            </div>
+            <div class="flex flex-col">
+                <span class="text-xl">True Health</span>
+                <span class="text-[9px] uppercase tracking-[0.4em] opacity-60 -mt-1 font-bold">Hospital Management System</span>
+            </div>
+        </div>
+        <div class="flex items-center gap-6">
+            <div class="flex items-center gap-2 px-3 py-1 bg-green-50 rounded-full border border-green-100">
+                <div class="status-pulse"></div>
+                <span class="text-[10px] uppercase font-black text-green-700 tracking-wider">AI Core Active</span>
+            </div>
+            <div class="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center border border-gray-200">
+                <i class="far fa-bell text-gray-400"></i>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-32">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- Global Premium Bottom Nav -->
+    <nav class="bottom-nav">
+        <a href="/dashboard/" id="navOverview" class="nav-item active">
+            <i class="fas fa-th-large"></i>
+            <span>Overview</span>
+        </a>
+        <a href="#" id="navVitals" class="nav-item">
+            <i class="fas fa-heartbeat"></i>
+            <span>Vitals</span>
+        </a>
+        
+        <button id="globalFab" class="fab-center">
+            <i class="fas fa-plus"></i>
+        </button>
+
+        <a href="#" id="navMeds" class="nav-item">
+            <i class="fas fa-pills"></i>
+            <span>Meds</span>
+        </a>
+        <a href="#" id="navRecords" class="nav-item">
+            <i class="fas fa-folder-open"></i>
+            <span>Records</span>
+        </a>
+    </nav>
+
+    <!-- ===== Global Slide-Up Overlay ===== -->
+    <div class="g-panel-overlay" id="gOverlay"></div>
+
+    <!-- ===== VITALS PANEL ===== -->
+    <div class="g-panel" id="panelVitals">
+        <div class="g-panel-handle"></div>
+        <div class="g-panel-header">
+            <span class="g-panel-title"><i class="fas fa-heartbeat mr-2 text-red-500"></i>Live Vitals</span>
+            <button class="g-panel-close" onclick="closePanel('panelVitals')"><i class="fas fa-times"></i></button>
+        </div>
+
+        <!-- AI Alert -->
+        <div class="vitals-ai-alert">
+            <i class="fas fa-robot"></i>
+            <p><strong>AI Analysis:</strong> All vitals are within normal range. Your blood pressure has been consistently stable this week. Maintain your hydration levels and continue with your prescribed medication schedule.</p>
+        </div>
+
+        <!-- Vitals Grid -->
+        <div class="vitals-grid">
+            <!-- Heart Rate -->
+            <div class="vital-card normal">
+                <i class="fas fa-heart vital-icon"></i>
+                <div class="vital-label">Heart Rate</div>
+                <div><span class="vital-value" id="vHR">72</span> <span class="vital-unit">bpm</span></div>
+                <div class="vital-trend stable">▶ Stable</div>
+                <canvas class="vital-spark" id="sparkHR"></canvas>
+            </div>
+            <!-- Blood Pressure -->
+            <div class="vital-card normal">
+                <i class="fas fa-tachometer-alt vital-icon"></i>
+                <div class="vital-label">Blood Pressure</div>
+                <div><span class="vital-value" id="vBP">118/76</span></div>
+                <div class="vital-unit">mmHg</div>
+                <div class="vital-trend up">▼ Improving</div>
+                <canvas class="vital-spark" id="sparkBP"></canvas>
+            </div>
+            <!-- SpO2 -->
+            <div class="vital-card normal">
+                <i class="fas fa-lungs vital-icon"></i>
+                <div class="vital-label">Oxygen Sat.</div>
+                <div><span class="vital-value" id="vSPO2">98</span><span class="vital-unit">%</span></div>
+                <div class="vital-trend stable">▶ Normal</div>
+                <canvas class="vital-spark" id="sparkSPO2"></canvas>
+            </div>
+            <!-- Temperature -->
+            <div class="vital-card normal">
+                <i class="fas fa-thermometer-half vital-icon"></i>
+                <div class="vital-label">Temperature</div>
+                <div><span class="vital-value" id="vTemp">36.7</span> <span class="vital-unit">°C</span></div>
+                <div class="vital-trend stable">▶ Afebrile</div>
+                <canvas class="vital-spark" id="sparkTemp"></canvas>
+            </div>
+            <!-- Weight -->
+            <div class="vital-card normal">
+                <i class="fas fa-weight vital-icon"></i>
+                <div class="vital-label">Weight</div>
+                <div><span class="vital-value" id="vWeight">68.5</span> <span class="vital-unit">kg</span></div>
+                <div class="vital-trend stable">▶ Stable</div>
+                <canvas class="vital-spark" id="sparkWeight"></canvas>
+            </div>
+            <!-- Blood Glucose -->
+            <div class="vital-card warning">
+                <i class="fas fa-vial vital-icon"></i>
+                <div class="vital-label">Blood Glucose</div>
+                <div><span class="vital-value" id="vGlucose">6.2</span> <span class="vital-unit">mmol/L</span></div>
+                <div class="vital-trend down">▲ Watch</div>
+                <canvas class="vital-spark" id="sparkGlucose"></canvas>
+            </div>
+        </div>
+
+        <!-- Vitals History -->
+        <div class="vitals-history-title">Recent Readings</div>
+        <div id="vitalsHistory">
+            <div class="vitals-history-row"><span><i class="fas fa-heart text-red-400 mr-2"></i>Heart Rate — 72 bpm</span><span class="date">Today 8:00 AM</span><span class="vitals-badge normal">Normal</span></div>
+            <div class="vitals-history-row"><span><i class="fas fa-tachometer-alt text-blue-400 mr-2"></i>BP — 118/76 mmHg</span><span class="date">Today 8:00 AM</span><span class="vitals-badge normal">Normal</span></div>
+            <div class="vitals-history-row"><span><i class="fas fa-vial text-yellow-500 mr-2"></i>Glucose — 6.2 mmol/L</span><span class="date">Yesterday</span><span class="vitals-badge warning">Monitor</span></div>
+            <div class="vitals-history-row"><span><i class="fas fa-thermometer-half text-orange-400 mr-2"></i>Temp — 37.2 °C</span><span class="date">2 days ago</span><span class="vitals-badge normal">Normal</span></div>
+            <div class="vitals-history-row"><span><i class="fas fa-lungs text-cyan-500 mr-2"></i>SpO₂ — 97%</span><span class="date">3 days ago</span><span class="vitals-badge normal">Normal</span></div>
+        </div>
+    </div>
+
+    <!-- ===== MEDS PANEL ===== -->
+    <div class="g-panel" id="panelMeds">
+        <div class="g-panel-handle"></div>
+        <div class="g-panel-header">
+            <span class="g-panel-title"><i class="fas fa-pills mr-2 text-indigo-500"></i>My Medications</span>
+            <button class="g-panel-close" onclick="closePanel('panelMeds')"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="vitals-ai-alert">
+            <i class="fas fa-robot"></i>
+            <p><strong>Adherence Score: 92%</strong> — Great job this week! You have 1 refill due in 5 days. Tap any medication to mark as taken or request a refill.</p>
+        </div>
+        <div id="medsListPanel">
+            <div class="meds-card">
+                <div>
+                    <div class="meds-name"><i class="fas fa-capsules mr-1 text-indigo-400"></i>Amoxicillin 500mg</div>
+                    <div class="meds-sub">1 tablet · Twice daily · After meals</div>
+                    <div class="meds-sub">Next dose: <strong class="text-blue-600">2h 15m</strong> · 5 days remaining</div>
+                </div>
+                <span class="meds-pill due">Due Soon</span>
+            </div>
+            <div class="meds-card">
+                <div>
+                    <div class="meds-name"><i class="fas fa-capsules mr-1 text-green-400"></i>Metformin 850mg</div>
+                    <div class="meds-sub">1 tablet · Once daily · Morning</div>
+                    <div class="meds-sub">Next dose: <strong class="text-gray-600">Tomorrow 7:00 AM</strong> · 12 days remaining</div>
+                </div>
+                <span class="meds-pill taken">Taken ✓</span>
+            </div>
+            <div class="meds-card">
+                <div>
+                    <div class="meds-name"><i class="fas fa-capsules mr-1 text-pink-400"></i>Lisinopril 10mg</div>
+                    <div class="meds-sub">1 tablet · Once daily · Evening</div>
+                    <div class="meds-sub">Next dose: <strong class="text-gray-600">Today 8:00 PM</strong> · 28 days remaining</div>
+                </div>
+                <span class="meds-pill">Scheduled</span>
+            </div>
+            <div class="meds-card">
+                <div>
+                    <div class="meds-name"><i class="fas fa-capsules mr-1 text-orange-400"></i>Vitamin D3 2000IU</div>
+                    <div class="meds-sub">1 softgel · Once daily · With food</div>
+                    <div class="meds-sub">Next dose: <strong class="text-gray-600">Tomorrow morning</strong> · Ongoing</div>
+                </div>
+                <span class="meds-pill taken">Taken ✓</span>
+            </div>
+        </div>
+        <button onclick="closePanel('panelMeds')" style="width:100%;margin-top:0.75rem;padding:0.75rem;background:#1e3a8a;color:white;border:none;border-radius:1rem;font-weight:700;font-size:0.9rem;cursor:pointer;">Request Refill</button>
+    </div>
+
+    <!-- ===== RECORDS PANEL ===== -->
+    <div class="g-panel" id="panelRecords">
+        <div class="g-panel-handle"></div>
+        <div class="g-panel-header">
+            <span class="g-panel-title"><i class="fas fa-folder-open mr-2 text-amber-500"></i>My Records</span>
+            <button class="g-panel-close" onclick="closePanel('panelRecords')"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="vitals-ai-alert">
+            <i class="fas fa-robot"></i>
+            <p><strong>3 new results</strong> since your last visit. Your Hemoglobin trend is positive. Discuss your Glucose readings with Dr. Ouma at your next appointment.</p>
+        </div>
+        <div id="recordsListPanel">
+            <div class="record-card">
+                <div class="record-title"><i class="fas fa-flask mr-2 text-red-400"></i>Complete Blood Count (CBC)</div>
+                <div class="record-meta">Lab · Requested by Dr. Ouma · Apr 5, 2026</div>
+                <div class="record-value">Hemoglobin: 12.5 g/dL <span style="font-size:0.8rem;color:#94a3b8;">| WBC: 6.2 | Platelets: 210</span></div>
+                <div class="record-interp normal">✓ All values within normal range</div>
+            </div>
+            <div class="record-card">
+                <div class="record-title"><i class="fas fa-vial mr-2 text-amber-400"></i>Fasting Blood Glucose</div>
+                <div class="record-meta">Lab · Requested by Dr. Ouma · Apr 3, 2026</div>
+                <div class="record-value">6.2 mmol/L</div>
+                <div class="record-interp abnormal">⚠ Slightly elevated — Pre-diabetic range. Monitor closely.</div>
+            </div>
+            <div class="record-card">
+                <div class="record-title"><i class="fas fa-x-ray mr-2 text-blue-400"></i>Chest X-Ray</div>
+                <div class="record-meta">Radiology · Dr. Kariuki · Mar 28, 2026</div>
+                <div class="record-value">PA View — No acute findings</div>
+                <div class="record-interp normal">✓ Lungs clear, heart size normal</div>
+            </div>
+            <div class="record-card">
+                <div class="record-title"><i class="fas fa-heartbeat mr-2 text-pink-400"></i>ECG (12-Lead)</div>
+                <div class="record-meta">Cardiology · Mar 20, 2026</div>
+                <div class="record-value">Normal Sinus Rhythm — HR 72 bpm</div>
+                <div class="record-interp normal">✓ No arrhythmias detected</div>
+            </div>
+            <div class="record-card">
+                <div class="record-title"><i class="fas fa-prescription-bottle mr-2 text-purple-400"></i>Urinalysis</div>
+                <div class="record-meta">Lab · Mar 15, 2026</div>
+                <div class="record-value">pH 6.5 · Protein: Negative · Glucose: Trace</div>
+                <div class="record-interp normal">✓ Essentially normal</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== ACTIONS PANEL ===== -->
+    <div class="g-panel" id="panelActions">
+        <div class="g-panel-handle"></div>
+        <div class="g-panel-header">
+            <span class="g-panel-title"><i class="fas fa-bolt mr-2 text-yellow-500"></i>Quick Actions</span>
+            <button class="g-panel-close" onclick="closePanel('panelActions')"><i class="fas fa-times"></i></button>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-4 mt-6 pb-4">
+            {% if user.role == 'admin' or user.role == 'manager' %}
+                <!-- Staff/Manager Actions -->
+                <a href="/admin/management/staff/add/" class="flex flex-col items-center justify-center p-6 bg-blue-50/50 rounded-[2rem] border border-blue-100 hover:bg-blue-600 hover:text-white transition-all group">
+                    <i class="fas fa-user-plus text-2xl mb-3 text-blue-600 group-hover:text-white"></i>
+                    <span class="text-[10px] font-black uppercase tracking-widest text-center">Add Staff</span>
+                </a>
+                <a href="/admin/management/expense/add/" class="flex flex-col items-center justify-center p-6 bg-blue-50/50 rounded-[2rem] border border-blue-100 hover:bg-blue-600 hover:text-white transition-all group">
+                    <i class="fas fa-file-invoice-dollar text-2xl mb-3 text-blue-600 group-hover:text-white"></i>
+                    <span class="text-[10px] font-black uppercase tracking-widest text-center">New Expense</span>
+                </a>
+                <a href="/admin/management/payroll/add/" class="flex flex-col items-center justify-center p-6 bg-blue-50/50 rounded-[2rem] border border-blue-100 hover:bg-blue-600 hover:text-white transition-all group">
+                    <i class="fas fa-money-check-alt text-2xl mb-3 text-blue-600 group-hover:text-white"></i>
+                    <span class="text-[10px] font-black uppercase tracking-widest text-center">Run Payroll</span>
+                </a>
+                <a href="/admin/billing/invoice/" class="flex flex-col items-center justify-center p-6 bg-blue-50/50 rounded-[2rem] border border-blue-100 hover:bg-blue-600 hover:text-white transition-all group">
+                    <i class="fas fa-receipt text-2xl mb-3 text-blue-600 group-hover:text-white"></i>
+                    <span class="text-[10px] font-black uppercase tracking-widest text-center">Invoices</span>
+                </a>
+            {% else %}
+                <!-- Patient Actions (Default) -->
+                <a href="#" class="flex flex-col items-center justify-center p-6 bg-green-50/50 rounded-[2rem] border border-green-100 hover:bg-green-600 hover:text-white transition-all group">
+                    <i class="fas fa-calendar-plus text-2xl mb-3 text-green-600 group-hover:text-white"></i>
+                    <span class="text-[10px] font-black uppercase tracking-widest text-center">Book Appt.</span>
+                </a>
+                <a href="#" class="flex flex-col items-center justify-center p-6 bg-green-50/50 rounded-[2rem] border border-green-100 hover:bg-green-600 hover:text-white transition-all group">
+                    <i class="fas fa-prescription-bottle text-2xl mb-3 text-green-600 group-hover:text-white"></i>
+                    <span class="text-[10px] font-black uppercase tracking-widest text-center">Refill Meds</span>
+                </a>
+                <a href="#" class="flex flex-col items-center justify-center p-6 bg-green-50/50 rounded-[2rem] border border-green-100 hover:bg-green-600 hover:text-white transition-all group">
+                    <i class="fas fa-microscope text-2xl mb-3 text-green-600 group-hover:text-white"></i>
+                    <span class="text-[10px] font-black uppercase tracking-widest text-center">Lab Results</span>
+                </a>
+                <a href="#" class="flex flex-col items-center justify-center p-6 bg-green-50/50 rounded-[2rem] border border-green-100 hover:bg-green-600 hover:text-white transition-all group">
+                    <i class="fas fa-headset text-2xl mb-3 text-green-600 group-hover:text-white"></i>
+                    <span class="text-[10px] font-black uppercase tracking-widest text-center">Support</span>
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+    {% block extra_js %}{% endblock %}
+    
+    <script>
+        // ===== Panel open/close logic =====
+        function openPanel(id) {
+            document.getElementById('gOverlay').classList.add('open');
+            document.getElementById(id).classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+        function closePanel(id) {
+            document.getElementById(id).classList.remove('open');
+            // Close overlay only if no other panels are open
+            const anyOpen = document.querySelectorAll('.g-panel.open').length > 0;
+            if (!anyOpen) {
+                document.getElementById('gOverlay').classList.remove('open');
+                document.body.style.overflow = '';
+            }
+        }
+        document.getElementById('gOverlay').addEventListener('click', () => {
+            document.querySelectorAll('.g-panel.open').forEach(p => p.classList.remove('open'));
+            document.getElementById('gOverlay').classList.remove('open');
+            document.body.style.overflow = '';
+        });
+
+        // ===== Sparkline renderer =====
+        function drawVitalSpark(canvasId, data, color) {
+            const c = document.getElementById(canvasId);
+            if (!c) return;
+            const dpr = window.devicePixelRatio || 1;
+            const rect = c.getBoundingClientRect();
+            c.width = (rect.width || 120) * dpr;
+            c.height = 28 * dpr;
+            const ctx = c.getContext('2d');
+            ctx.scale(dpr, dpr);
+            const w = rect.width || 120, h = 28;
+            const min = Math.min(...data), max = Math.max(...data);
+            const range = (max - min) || 1;
+            const step = w / (data.length - 1);
+            // Fill
+            ctx.beginPath();
+            ctx.moveTo(0, h);
+            ctx.lineTo(0, h - ((data[0] - min) / range) * (h - 4));
+            for (let i = 1; i < data.length; i++) {
+                ctx.lineTo(i * step, h - ((data[i] - min) / range) * (h - 4));
+            }
+            ctx.lineTo(w, h);
+            ctx.closePath();
+            ctx.fillStyle = color + '22';
+            ctx.fill();
+            // Line
+            ctx.beginPath();
+            ctx.moveTo(0, h - ((data[0] - min) / range) * (h - 4));
+            for (let i = 1; i < data.length; i++) {
+                ctx.lineTo(i * step, h - ((data[i] - min) / range) * (h - 4));
+            }
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2;
+            ctx.lineJoin = 'round';
+            ctx.stroke();
+            // Last dot
+            ctx.beginPath();
+            ctx.arc((data.length - 1) * step, h - ((data[data.length - 1] - min) / range) * (h - 4), 3, 0, 2 * Math.PI);
+            ctx.fillStyle = color;
+            ctx.fill();
+        }
+
+        function initVitalsSparks() {
+            drawVitalSpark('sparkHR',     [68,71,74,70,69,73,72],      '#ef4444');
+            drawVitalSpark('sparkBP',     [125,122,120,119,118,118,118], '#3b82f6');
+            drawVitalSpark('sparkSPO2',  [97,98,98,97,98,99,98],       '#06b6d4');
+            drawVitalSpark('sparkTemp',   [36.5,36.6,37.2,36.9,36.7,36.7,36.7], '#f59e0b');
+            drawVitalSpark('sparkWeight', [68.8,68.7,68.6,68.5,68.5,68.5,68.5], '#8b5cf6');
+            drawVitalSpark('sparkGlucose',[5.8,6.0,5.9,6.3,6.1,6.4,6.2],       '#f97316');
+        }
+
+        // ===== Nav buttons =====
+        document.getElementById('navVitals')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            openPanel('panelVitals');
+            // Sparks need the panel to be visible first for width measurement
+            requestAnimationFrame(() => requestAnimationFrame(() => initVitalsSparks()));
+        });
+
+        document.getElementById('navMeds')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            // Try real API first, fall back to offline panel
+            fetch('/api/pharmacy/my-prescriptions/')
+                .then(r => r.ok ? r.json() : [])
+                .then(data => {
+                    if (data && data.length) {
+                        const list = document.getElementById('medsListPanel');
+                        if (list) {
+                            list.innerHTML = data.map(p => `
+                                <div class="meds-card">
+                                    <div>
+                                        <div class="meds-name"><i class="fas fa-capsules mr-1 text-indigo-400"></i>${p.drug || p.medication || 'Medication'}</div>
+                                        <div class="meds-sub">${p.dosage || ''} &middot; ${p.frequency || ''}</div>
+                                        <div class="meds-sub">${p.remaining || ''} days remaining</div>
+                                    </div>
+                                    <span class="meds-pill">Active</span>
+                                </div>`).join('');
+                        }
+                    }
+                }).catch(() => {})
+                .finally(() => openPanel('panelMeds'));
+        });
+
+        document.getElementById('navRecords')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            // Try real API first, fall back to offline panel
+            fetch('/api/lab/my-results/')
+                .then(r => r.ok ? r.json() : [])
+                .then(data => {
+                    if (data && data.length) {
+                        const list = document.getElementById('recordsListPanel');
+                        if (list) {
+                            list.innerHTML = data.map(r => `
+                                <div class="record-card">
+                                    <div class="record-title"><i class="fas fa-flask mr-2 text-blue-400"></i>${r.test_name || r.name}</div>
+                                    <div class="record-meta">${r.ordered_at || r.date || ''}</div>
+                                    <div class="record-value">${r.value || ''} ${r.unit || ''}</div>
+                                    <div class="record-interp ${r.interpretation === 'Normal' ? 'normal' : 'abnormal'}">${r.interpretation || ''}</div>
+                                </div>`).join('');
+                        }
+                    }
+                }).catch(() => {})
+                .finally(() => openPanel('panelRecords'));
+        });
+
+        // ===== FAB =====
+        const fab = document.getElementById('globalFab');
+        fab?.addEventListener('click', () => {
+            openPanel('panelActions');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,246 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Hospital Management Dashboard | TrueHealth HMS{% endblock %}
+
+{% block extra_css %}
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<style>
+  body { font-family: 'Inter', sans-serif; background: #f8fafc; color: #1e293b; }
+  .stat-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    border: 1px solid #e2e8f0;
+  }
+  .sidebar {
+    width: 260px;
+    background: #0f172a;
+    color: white;
+    height: 100vh;
+    position: fixed;
+  }
+  .main-content {
+    margin-left: 260px;
+    padding: 2rem;
+  }
+  .nav-link {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1.5rem;
+    color: #94a3b8;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  .nav-link:hover, .nav-link.active {
+    background: #1e293b;
+    color: white;
+  }
+  .badge {
+    padding: 0.25rem 0.6rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  .badge-success { background: #dcfce7; color: #166534; }
+  .badge-warning { background: #fef9c3; color: #854d0e; }
+  .badge-danger { background: #fee2e2; color: #991b1b; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="sidebar">
+  <div class="p-6">
+    <h2 class="text-xl font-bold flex items-center gap-2">
+      <span class="text-blue-500">🏥</span> TrueHealth
+    </h2>
+    <p class="text-xs text-slate-500 mt-1 uppercase tracking-wider">Hospital Management</p>
+  </div>
+  <nav class="mt-4">
+    <a href="#" class="nav-link active"><i class="fas fa-th-large mr-3"></i> Dashboard</a>
+    <a href="#" class="nav-link"><i class="fas fa-users mr-3"></i> Patient Registry</a>
+    <a href="#" class="nav-link"><i class="fas fa-user-md mr-3"></i> Staff Roster</a>
+    <a href="#" class="nav-link"><i class="fas fa-bed mr-3"></i> Ward Capacity</a>
+    <a href="#" class="nav-link"><i class="fas fa-file-invoice-dollar mr-3"></i> Financials</a>
+    <a href="#" class="nav-link"><i class="fas fa-cog mr-3"></i> Settings</a>
+  </nav>
+</div>
+
+<div class="main-content">
+  <!-- Header -->
+  <header class="flex justify-between items-center mb-8 bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+    <div>
+      <h1 class="text-2xl font-bold text-slate-800">Hospital Command Center</h1>
+      <p class="text-slate-500 text-sm">Real-time operational overview • Oct 06, 2026</p>
+    </div>
+    <div class="flex items-center gap-4">
+      <div class="text-right">
+        <p class="text-sm font-semibold">Dr. Admin User</p>
+        <p class="text-xs text-slate-500">Chief Medical Officer</p>
+      </div>
+      <div class="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center font-bold text-slate-600">DU</div>
+    </div>
+  </header>
+
+  <!-- Key Metrics Row -->
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div class="stat-card">
+      <div class="flex justify-between items-start mb-4">
+        <span class="p-2 bg-blue-50 text-blue-600 rounded-lg"><i class="fas fa-procedures text-xl"></i></span>
+        <span class="text-xs font-medium text-green-600">+4% vs last week</span>
+      </div>
+      <p class="text-slate-500 text-sm">Total Occupancy</p>
+      <div class="flex items-baseline gap-2">
+        <p class="text-3xl font-bold">84%</p>
+        <p class="text-xs text-slate-400">212 / 250 Beds</p>
+      </div>
+      <div class="w-full bg-slate-100 h-1.5 rounded-full mt-4">
+        <div class="bg-blue-500 h-1.5 rounded-full" style="width: 84%"></div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="flex justify-between items-start mb-4">
+        <span class="p-2 bg-purple-50 text-purple-600 rounded-lg"><i class="fas fa-stethoscope text-xl"></i></span>
+        <span class="text-xs font-medium text-slate-500">Standard Shift</span>
+      </div>
+      <p class="text-slate-500 text-sm">On-Duty Staff</p>
+      <div class="flex items-baseline gap-2">
+        <p class="text-3xl font-bold">48</p>
+        <p class="text-xs text-slate-400">12 Doctors • 36 Nurses</p>
+      </div>
+      <p class="text-xs text-green-600 mt-4"><i class="fas fa-check-circle mr-1"></i> Full capacity reached</p>
+    </div>
+
+    <div class="stat-card">
+      <div class="flex justify-between items-start mb-4">
+        <span class="p-2 bg-orange-50 text-orange-600 rounded-lg"><i class="fas fa-clock text-xl"></i></span>
+        <span class="text-xs font-medium text-red-600">+12m peak delay</span>
+      </div>
+      <p class="text-slate-500 text-sm">Avg. Wait Time</p>
+      <div class="flex items-baseline gap-2">
+        <p class="text-3xl font-bold">24m</p>
+        <p class="text-xs text-slate-400">Triage: Level 3</p>
+      </div>
+      <div class="w-full bg-slate-100 h-1.5 rounded-full mt-4">
+        <div class="bg-orange-500 h-1.5 rounded-full" style="width: 60%"></div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="flex justify-between items-start mb-4">
+        <span class="p-2 bg-green-50 text-green-600 rounded-lg"><i class="fas fa-wallet text-xl"></i></span>
+        <span class="text-xs font-medium text-green-600">Daily Revenue</span>
+      </div>
+      <p class="text-slate-500 text-sm">Total Billing (Today)</p>
+      <div class="flex items-baseline gap-2">
+        <p class="text-3xl font-bold">KSh 425k</p>
+        <p class="text-xs text-slate-400">82% via Insurance</p>
+      </div>
+      <p class="text-xs text-slate-500 mt-4">Top dept: Maternity</p>
+    </div>
+  </div>
+
+  <!-- Detailed Sections -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Recent Admissions -->
+    <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+      <div class="p-6 border-bottom border-slate-100 flex justify-between items-center">
+        <h3 class="font-bold text-slate-800">Recent Admissions</h3>
+        <button class="text-blue-600 text-sm font-medium hover:underline">View all patients</button>
+      </div>
+      <table class="w-full text-left">
+        <thead class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider">
+          <tr>
+            <th class="px-6 py-3 font-semibold">Patient Name</th>
+            <th class="px-6 py-3 font-semibold">ID / NHIF</th>
+            <th class="px-6 py-3 font-semibold">Department</th>
+            <th class="px-6 py-3 font-semibold">Status</th>
+            <th class="px-6 py-3 font-semibold">Time</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100 text-sm">
+          <tr>
+            <td class="px-6 py-4 font-medium">Moha Abi</td>
+            <td class="px-6 py-4 text-slate-500">#441209</td>
+            <td class="px-6 py-4">Internal Medicine</td>
+            <td class="px-6 py-4"><span class="badge badge-success">Admitted</span></td>
+            <td class="px-6 py-4 text-slate-500">10:45 AM</td>
+          </tr>
+          <tr>
+            <td class="px-6 py-4 font-medium">Amina Jibril</td>
+            <td class="px-6 py-4 text-slate-500">#NHIF-901</td>
+            <td class="px-6 py-4">Maternity</td>
+            <td class="px-6 py-4"><span class="badge badge-warning">Observation</span></td>
+            <td class="px-6 py-4 text-slate-500">11:12 AM</td>
+          </tr>
+          <tr>
+            <td class="px-6 py-4 font-medium">Samuel Karanja</td>
+            <td class="px-6 py-4 text-slate-500">#882103</td>
+            <td class="px-6 py-4">Radiology</td>
+            <td class="px-6 py-4"><span class="badge badge-danger">Critical</span></td>
+            <td class="px-6 py-4 text-slate-500">01:22 PM</td>
+          </tr>
+          <tr>
+            <td class="px-6 py-4 font-medium">Zainab Omari</td>
+            <td class="px-6 py-4 text-slate-500">#455112</td>
+            <td class="px-6 py-4">Pharmacy</td>
+            <td class="px-6 py-4"><span class="badge badge-success">Discharged</span></td>
+            <td class="px-6 py-4 text-slate-500">02:30 PM</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Ward Occupancy Chart -->
+    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+      <h3 class="font-bold text-slate-800 mb-4">Ward Occupancy</h3>
+      <div class="space-y-6">
+        <div>
+          <div class="flex justify-between text-sm mb-1">
+            <span class="font-medium">Maternity Ward</span>
+            <span class="text-slate-500">18 / 20</span>
+          </div>
+          <div class="w-full bg-slate-100 h-2 rounded-full">
+            <div class="bg-purple-500 h-2 rounded-full" style="width: 90%"></div>
+          </div>
+        </div>
+        <div>
+          <div class="flex justify-between text-sm mb-1">
+            <span class="font-medium">General Ward</span>
+            <span class="text-slate-500">42 / 60</span>
+          </div>
+          <div class="w-full bg-slate-100 h-2 rounded-full">
+            <div class="bg-blue-500 h-2 rounded-full" style="width: 70%"></div>
+          </div>
+        </div>
+        <div>
+          <div class="flex justify-between text-sm mb-1">
+            <span class="font-medium">ICU / HDU</span>
+            <span class="text-slate-500">8 / 10</span>
+          </div>
+          <div class="w-full bg-slate-100 h-2 rounded-full">
+            <div class="bg-red-500 h-2 rounded-full" style="width: 80%"></div>
+          </div>
+        </div>
+        <div>
+          <div class="flex justify-between text-sm mb-1">
+            <span class="font-medium">Pediatrics</span>
+            <span class="text-slate-500">12 / 24</span>
+          </div>
+          <div class="w-full bg-slate-100 h-2 rounded-full">
+            <div class="bg-green-500 h-2 rounded-full" style="width: 50%"></div>
+          </div>
+        </div>
+      </div>
+      <div class="mt-8 pt-6 border-t border-slate-100">
+        <p class="text-xs text-slate-400 italic">"Operational efficiency is at 82% today. Recommend reviewing ER staff levels for evening peak."</p>
+        <p class="text-xs text-slate-500 mt-2 font-bold">— TrueHealth AI Insights</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

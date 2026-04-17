@@ -1,0 +1,269 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Pharmacy Staff Dashboard | TrueHealth{% endblock %}
+
+{% block content %}
+<div class="glass-container mb-24 max-w-5xl mx-auto">
+  <!-- Staff Hero Section -->
+  <div class="hero-card rounded-[2.5rem] p-10 mb-10 text-white shadow-2xl relative overflow-hidden group">
+    <div class="absolute inset-0 bg-gradient-to-br from-emerald-600/20 to-transparent"></div>
+    <div class="flex justify-between items-center relative z-10">
+      <div>
+        <h1 class="text-4xl font-black brand-text mb-2 tracking-tight">Pharmacy Command</h1>
+        <p class="slogan-text opacity-90 font-medium tracking-[0.2em] uppercase text-[10px]">TrueHealth Inventory Control</p>
+      </div>
+      <a href="{% url 'pharmacy:dashboard' %}" class="bg-white/10 backdrop-blur-md hover:bg-white/20 text-white border border-white/30 px-6 py-3 rounded-2xl text-sm font-bold transition-all flex items-center gap-2 group-hover:scale-105">
+        <i class="fas fa-desktop text-xs"></i> 
+        Patient Interface
+      </a>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+    <!-- Low Stock Alerts -->
+    <div class="bg-white/40 backdrop-blur-md border border-red-100/50 p-6 rounded-[2rem] shadow-sm relative overflow-hidden">
+      <div class="absolute top-0 right-0 p-4 opacity-5">
+        <i class="fas fa-exclamation-triangle text-6xl text-red-600"></i>
+      </div>
+      <h3 class="font-black text-red-800 flex items-center mb-4 text-sm uppercase tracking-widest">
+        <i class="fas fa-chart-line mr-2"></i> Critical Stock Alert
+      </h3>
+      <ul class="text-sm text-red-700/80 space-y-2">
+        {% for batch in low_stock %}
+          <li class="flex items-center gap-2 bg-red-50/50 p-2 rounded-xl">
+            <span class="w-1.5 h-1.5 rounded-full bg-red-400"></span>
+            <strong>{{ batch.drug.name }}</strong> 
+            <span class="opacity-60">#{{ batch.batch_number }}</span>
+            <span class="ml-auto bg-red-600 text-white px-2 py-0.5 rounded-lg font-black text-[10px]">{{ batch.quantity }} LFT</span>
+          </li>
+        {% empty %}
+          <li class="italic text-gray-400">Inventory levels healthy.</li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <!-- Expiring Soon -->
+    <div class="bg-white/40 backdrop-blur-md border border-amber-100/50 p-6 rounded-[2rem] shadow-sm relative overflow-hidden">
+      <div class="absolute top-0 right-0 p-4 opacity-5">
+        <i class="fas fa-hourglass-half text-6xl text-amber-600"></i>
+      </div>
+      <h3 class="font-black text-amber-800 flex items-center mb-4 text-sm uppercase tracking-widest">
+        <i class="fas fa-clock mr-2"></i> Quality Control
+      </h3>
+      <ul class="text-sm text-amber-700/80 space-y-2">
+        {% for batch in expiring_soon %}
+          <li class="flex items-center gap-2 bg-amber-50/50 p-2 rounded-xl">
+            <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+            <strong>{{ batch.drug.name }}</strong>
+            <span class="ml-auto font-bold">{{ batch.expiry_date|date:"M Y" }}</span>
+          </li>
+        {% empty %}
+          <li class="italic text-gray-400">No imminent expiries.</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+  <!-- Pending Prescriptions -->
+  <div class="bg-blue-600/5 border border-blue-100/50 p-8 mb-10 rounded-[2.5rem] shadow-sm relative overflow-hidden">
+    <div class="absolute top-0 right-0 p-6 opacity-10">
+      <i class="fas fa-prescription-bottle-medical text-8xl text-blue-600"></i>
+    </div>
+    <h3 class="font-black text-blue-900 flex items-center mb-6 text-sm uppercase tracking-widest">
+      <i class="fas fa-tasks mr-2"></i> Pending Dispensing Queue
+    </h3>
+    <div class="space-y-4">
+      {% for pres in pending_prescriptions %}
+        <div class="bg-white/80 backdrop-blur-sm p-5 rounded-2xl shadow-sm border border-white/60 flex justify-between items-center group/item hover:border-blue-400 transition-all">
+          <div>
+            <p class="font-black text-gray-900 text-lg">Rx #{{ pres.id }} <span class="text-blue-600 ml-2">→</span> {{ pres.patient.user.get_full_name|default:pres.patient.user.username }}</p>
+            <p class="text-[10px] uppercase font-bold text-gray-400 tracking-wider mt-1">{{ pres.date_prescribed|date:"M d, Y • H:i" }}</p>
+            <div class="mt-3 flex flex-wrap gap-1">
+              {% for item in pres.items.all %}
+                <span class="inline-block bg-blue-100/50 text-blue-800 px-3 py-1 rounded-lg font-bold text-[10px] border border-blue-200/50">{{ item.drug_batch.drug.name }} x{{ item.quantity }}</span>
+              {% endfor %}
+            </div>
+          </div>
+          <button class="dispense-btn bg-emerald-600 hover:bg-emerald-500 text-white px-8 py-3 rounded-2xl text-xs font-black transition-all shadow-xl shadow-emerald-600/20 active:scale-95" data-pres-id="{{ pres.id }}">
+            Finalize & Dispense
+          </button>
+        </div>
+      {% empty %}
+        <p class="text-sm text-blue-600/60 italic font-medium">No pending fulfillment requests.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Inventory Table -->
+  <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden mb-10">
+    <div class="bg-gray-50 px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+      <h2 class="text-xl font-bold text-gray-800">Current Inventory</h2>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="min-w-full text-left">
+        <thead>
+          <tr class="text-xs font-bold text-gray-500 uppercase tracking-widest bg-gray-50 border-b">
+            <th class="px-6 py-4">Drug</th>
+            <th class="px-6 py-4">Batch</th>
+            <th class="px-6 py-4">Expiry</th>
+            <th class="px-6 py-4">Quantity</th>
+            <th class="px-6 py-4">Status</th>
+            <th class="px-6 py-4 text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+          {% for batch in all_batches %}
+          <tr class="hover:bg-gray-50 transition">
+            <td class="px-6 py-4 font-bold text-gray-800">{{ batch.drug.name }}</td>
+            <td class="px-6 py-4 text-sm text-gray-600">{{ batch.batch_number }}</td>
+            <td class="px-6 py-4 text-sm text-gray-600">{{ batch.expiry_date }}</td>
+            <td class="px-6 py-4 text-sm font-bold {% if batch.quantity <= batch.drug.reorder_level %}text-red-600{% else %}text-gray-800{% endif %}">
+              {{ batch.quantity }}
+            </td>
+            <td class="px-6 py-4">
+              {% if batch.quantity <= batch.drug.reorder_level %}
+                <span class="bg-red-100 text-red-700 text-[10px] font-bold px-2 py-1 rounded-full">LOW STOCK</span>
+              {% else %}
+                <span class="bg-green-100 text-green-700 text-[10px] font-bold px-2 py-1 rounded-full">HEALTHY</span>
+              {% endif %}
+            </td>
+            <td class="px-6 py-4 text-right space-x-2">
+              <button class="stock-in-trigger bg-blue-100 hover:bg-blue-600 text-blue-700 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition" data-batch-id="{{ batch.id }}" data-drug-name="{{ batch.drug.name }} ({{ batch.batch_number }})">
+                + Stock In
+              </button>
+              <button class="stock-out-btn bg-orange-100 hover:bg-orange-600 text-orange-700 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition" data-batch-id="{{ batch.id }}">
+                - Stock Out
+              </button>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Stock In Form (add new purchase) -->
+  <div id="stockInModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+    <div class="bg-white p-8 rounded-2xl shadow-2xl max-w-md w-full mx-4">
+      <h3 class="text-xl font-bold text-gray-800 mb-4">Add New Stock (Purchase)</h3>
+      <p id="selectedBatchName" class="text-sm text-gray-500 mb-6"></p>
+      <form id="stockInForm" class="space-y-4">
+        <input type="hidden" id="drugBatchId">
+        <div>
+          <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Quantity to Add</label>
+          <input type="number" id="addQty" placeholder="e.g., 100" required class="w-full border-gray-200 border rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none transition">
+        </div>
+        <div class="flex gap-3 pt-2">
+          <button type="submit" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl transition">Apply Update</button>
+          <button type="button" id="closeModal" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-3 rounded-xl transition">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  // CSRF Helper
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+
+  // Dispense prescription
+  document.querySelectorAll('.dispense-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const presId = btn.dataset.presId;
+      if (confirm('Dispense this prescription? This will reduce stock levels.')) {
+        const res = await fetch('/api/pharmacy/dispense/', {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+          },
+          body: JSON.stringify({ prescription_id: presId })
+        });
+        if (res.ok) {
+            alert('Dispensed successfully!');
+            location.reload();
+        } else {
+            const err = await res.json();
+            alert('Error: ' + (err.error || 'Failed to dispense'));
+        }
+      }
+    });
+  });
+
+  // Modal Logic
+  const modal = document.getElementById('stockInModal');
+  document.querySelectorAll('.stock-in-trigger').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.getElementById('drugBatchId').value = btn.dataset.batchId;
+      document.getElementById('selectedBatchName').innerText = "Updating: " + btn.dataset.drugName;
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    });
+  });
+  document.getElementById('closeModal').addEventListener('click', () => {
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  });
+
+  // Stock In (purchase)
+  document.getElementById('stockInForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const batchId = document.getElementById('drugBatchId').value;
+    const qty = document.getElementById('addQty').value;
+    if (!batchId || !qty) return;
+    const res = await fetch('/api/pharmacy/stock-in/', {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCookie('csrftoken')
+      },
+      body: JSON.stringify({ batch_id: batchId, quantity: parseInt(qty) })
+    });
+    if (res.ok) {
+        alert('Stock updated!');
+        location.reload();
+    } else {
+        const err = await res.json();
+        alert('Error: ' + (err.error || 'Failed to update stock'));
+    }
+  });
+
+  // Stock Out (manual removal, e.g., wastage)
+  document.querySelectorAll('.stock-out-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const batchId = btn.dataset.batchId;
+      const qty = prompt('How many units to remove? (Wastage/Adjustment)');
+      if (!qty) return;
+      const res = await fetch('/api/pharmacy/stock-out/', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({ batch_id: batchId, quantity: parseInt(qty) })
+      });
+      if (res.ok) {
+          alert('Stock removed successfully.');
+          location.reload();
+      } else {
+          const err = await res.json();
+          alert('Error: ' + (err.error || 'Failed to remove stock'));
+      }
+    });
+  });
+</script>
+{% endblock %}

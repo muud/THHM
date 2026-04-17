@@ -1,0 +1,39 @@
+{
+  "immunisation": {
+    "header": "Protecting your child, one shot at a time.",
+    "schedule": [
+      { "vaccine": "BCG", "timing": "Given at birth", "status": "Completed ✓" },
+      { "vaccine": "Polio 1", "timing": "Due in 5 days", "action": "Schedule now" }
+    ],
+    "reminder": "We’ll SMS you before each vaccine is due. Confirm your phone number.",
+    "afterVaccination": "Your child received {vaccine}. Mild fever or fussiness is normal – give plenty of fluids and cuddles. Call us if you’re worried."
+  },
+  "insuranceBilling": {
+    "policyHeader": "Your TrueHealth Care plan – affordable peace of mind.",
+    "coverage": "You are covered for: Outpatient visits (KSh {outpatient_amount}), Pharmacy (KSh {pharmacy_amount}), Maternity (normal delivery – full cover).",
+    "renewButton": "Renew policy",
+    "paymentText": "You have an outstanding bill of KSh {outstanding_amount}. Pay securely with M‑Pesa or card.",
+    "paymentSuccess": "Thank you! Your payment was received. A receipt has been emailed to you.",
+    "nhifStatus": "Your NHIF claim is being processed. Usually takes 5–7 working days."
+  },
+  "errorMessages": {
+    "validation": {
+      "required": "We missed your {fieldName}. Could you fill it in? It helps us treat you safely.",
+      "invalidPhone": "That phone number doesn’t look right. Double‑check the digits – we need to reach you.",
+      "weakPassword": "Choose a password that’s easy for you to remember but hard for others to guess. At least 8 letters or numbers."
+    },
+    "emptyStates": {
+      "appointments": "You don’t have any upcoming visits. Ready to book one? We have slots tomorrow.",
+      "labResults": "No results yet. Once your doctor orders tests, they’ll appear here.",
+      "prescriptions": "You’re not taking any regular medicines right now. That’s great!"
+    },
+    "offline": "We lost connection to the server. Don’t worry – your data is safe. Please check your internet and try again."
+  },
+  "successMessages": {
+    "appointmentBooked": "Confirmed. We’ve sent a reminder to your phone.",
+    "labRequested": "Your request is received. A nurse will call you within 2 hours to confirm the sample collection time.",
+    "prescriptionRefill": "Your refill is being prepared. You’ll get an SMS when it’s ready.",
+    "paymentCompleted": "Payment successful. Thank you for trusting us with your care.",
+    "profileUpdated": "Your information has been updated. If you changed your NHIF number, your claims will now use the new one."
+  }
+}

@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Maternity Care | TrueHealth HMS{% endblock %}
+
+{% block extra_css %}
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<style>
+  body { font-family: 'Inter', sans-serif; background: #fff1f2; }
+  .mat-card { background: white; border-radius: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); border: 1px solid #fecdd3; }
+  .anc-step { position: relative; padding-bottom: 2rem; border-left: 2px dashed #fecdd3; margin-left: 1rem; padding-left: 2rem; }
+  .anc-step:last-child { border-left: none; }
+  .anc-step::before { content: ''; position: absolute; left: -9px; top: 0; width: 16px; height: 16px; border-radius: 50%; background: white; border: 2px solid #fb7185; }
+  .anc-step.completed::before { background: #fb7185; }
+  .anc-step.active::before { background: #fb7185; box-shadow: 0 0 0 4px rgba(251, 113, 133, 0.2); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto px-4 py-8">
+  <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+    <div class="flex items-center gap-4">
+      <div class="p-4 bg-rose-100 text-rose-500 rounded-2xl"><i class="fas fa-baby text-3xl"></i></div>
+      <div>
+        <h1 class="text-3xl font-bold text-slate-800">Maternity Journey</h1>
+        <p class="text-slate-500 text-sm italic">"Nurturing both mother and baby, every step of the way."</p>
+      </div>
+    </div>
+    <div class="flex gap-3">
+       <div class="bg-white px-5 py-2.5 rounded-2xl border border-rose-200">
+          <p class="text-[10px] text-rose-400 font-bold uppercase tracking-widest">Expected Delivery</p>
+          <p class="text-lg font-bold text-slate-800">Jan 12, 2027</p>
+       </div>
+       <div class="bg-rose-500 text-white px-5 py-2.5 rounded-2xl flex flex-col items-center justify-center">
+          <p class="text-[10px] font-bold uppercase tracking-widest">Week</p>
+          <p class="text-lg font-bold">24</p>
+       </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+    
+    <!-- ANC Tracker (Timeline) -->
+    <div class="lg:col-span-4 space-y-6">
+      <h2 class="text-xl font-bold text-rose-700 mx-2">ANC Timeline</h2>
+      <div class="mat-card p-6 py-8">
+        <div class="anc-step completed">
+          <h3 class="text-sm font-bold text-slate-800">Visit 1: Initial Booking</h3>
+          <p class="text-xs text-slate-500">Aug 02, 2026 • 8 Weeks</p>
+        </div>
+        <div class="anc-step active">
+          <h3 class="text-sm font-bold text-slate-800">Visit 2: Detailed Scan</h3>
+          <p class="text-xs text-slate-500">Oct 05, 2026 • 20 Weeks</p>
+          <div class="mt-2 text-xs text-rose-600 bg-rose-50 p-2 rounded-lg italic">"Upcoming: Oct 12, 2026 09:00 AM"</div>
+        </div>
+        <div class="anc-step">
+          <h3 class="text-sm font-bold text-slate-400">Visit 3: Tetanus Toxoid</h3>
+          <p class="text-xs text-slate-400">Scheduled: Nov 15th</p>
+        </div>
+        <div class="anc-step">
+          <h3 class="text-sm font-bold text-slate-400">Visit 4: Iron & Folate Sync</h3>
+          <p class="text-xs text-slate-400">Scheduled: Dec 10th</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Health Stats & Delivery Planning -->
+    <div class="lg:col-span-8 space-y-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Vitals Card -->
+        <div class="mat-card p-6">
+          <h3 class="font-bold text-slate-800 mb-4 flex items-center">
+             <i class="fas fa-heartbeat text-rose-500 mr-2"></i> Maternal Vitals
+          </h3>
+          <div class="space-y-4">
+            <div class="flex justify-between items-center bg-rose-50/50 p-3 rounded-xl">
+               <span class="text-sm font-medium text-slate-700">Blood Pressure</span>
+               <span class="font-bold text-slate-900">110/70</span>
+            </div>
+            <div class="flex justify-between items-center bg-rose-50/50 p-3 rounded-xl">
+               <span class="text-sm font-medium text-slate-700">Weight Gain</span>
+               <span class="font-bold text-slate-900">+4.2 kg</span>
+            </div>
+            <div class="flex justify-between items-center bg-rose-50/50 p-3 rounded-xl">
+               <span class="text-sm font-medium text-slate-700">Fetal Movements</span>
+               <span class="font-bold text-green-600">Active</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Care Package / Delivery Plan -->
+        <div class="mat-card p-6 bg-rose-50">
+          <h3 class="font-bold text-slate-800 mb-2">Delivery Planning</h3>
+          <p class="text-xs text-slate-500 mb-6">Coordinate your birth experience with our obstetrician.</p>
+          
+          <div class="space-y-3">
+             <div class="flex items-center gap-3">
+                <i class="fas fa-check-circle text-rose-500"></i>
+                <span class="text-xs font-medium text-slate-700">Birth Plan Finalized</span>
+             </div>
+             <div class="flex items-center gap-3 opacity-50">
+                <i class="fas fa-circle text-rose-200"></i>
+                <span class="text-xs font-medium text-slate-700">Hospital Bag Packed</span>
+             </div>
+             <div class="flex items-center gap-3 opacity-50">
+                <i class="fas fa-circle text-rose-200"></i>
+                <span class="text-xs font-medium text-slate-700">Partner Orientation</span>
+             </div>
+          </div>
+          <button class="w-full mt-8 bg-rose-500 hover:bg-rose-600 text-white py-2 rounded-xl text-xs font-bold transition shadow-sm">
+             Open Delivery Plan
+          </button>
+        </div>
+      </div>
+
+      <!-- Expert Corner -->
+      <div class="mat-card p-6 border-l-8 border-rose-500">
+         <div class="flex justify-between items-center mb-4">
+            <h3 class="font-bold text-slate-800 text-lg">Nurture Notes</h3>
+            <span class="text-[10px] text-rose-400 font-bold uppercase">Topic: Nutrition</span>
+         </div>
+         <p class="text-sm text-slate-600 leading-relaxed mb-6">
+            Ensuring adequate iron intake is critical during this stage. Focus on spinach, legumes, and lean proteins to support your baby's brain development and your own energy levels.
+         </p>
+         <div class="flex gap-3">
+           <button class="text-rose-500 text-xs font-bold hover:underline">Chat with Midwife</button>
+           <span class="text-slate-200">|</span>
+           <button class="text-rose-500 text-xs font-bold hover:underline">View Recipes</button>
+         </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
