@@ -74,6 +74,12 @@ INSTALLED_APPS = [
 # Custom User Model
 AUTH_USER_MODEL = 'core.User'
 
+AUTHENTICATION_BACKENDS = [
+    'apps.core.backends.EmailOrUsernameBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',   # if you have whitenoise
