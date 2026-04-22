@@ -95,7 +95,8 @@ const ReceptionistDashboard: React.FC = () => {
   return (
     <div className="dashboard-layout" style={{ maxWidth: '1200px', margin: '0 auto', padding: '2rem' }}>
       <header className="dashboard-header" style={{ background: 'none', border: 'none', padding: '0', marginBottom: '2rem' }}>
-        <h1 className="greeting-text" style={{ color: '#1E293B' }}>Reception & Billing</h1>
+        <h1 className="greeting-text" style={{ color: '#1E293B' }}>Reception & Billing {loading && <span className="text-sm text-blue-500 animate-pulse ml-3">Loading...</span>}</h1>
+
         <p className="greeting-time" style={{ color: '#64748B' }}>Welcome back. Manage patient arrivals and payments here.</p>
       </header>
 

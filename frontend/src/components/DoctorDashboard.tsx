@@ -93,7 +93,7 @@ const DoctorDashboard: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Waiting List */}
         <div className="lg:col-span-4 dashboard-card p-6">
-          <h3 className="card-title mb-4">Patient Queue ({queue.length})</h3>
+          <h3 className="card-title mb-4">Patient Queue ({queue.length}) {loading && <span className="text-xs text-blue-500 animate-pulse ml-2">Loading...</span>}</h3>
           <div className="space-y-3">
             {queue.map(v => (
               <div 

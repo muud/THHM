@@ -1,6 +1,8 @@
 export const getBaseUrl = async () => {
-  return ''; // Unified Mono-architecture: APIs are natively hosted on the origin
+  // Use VITE_API_URL if provided (e.g. on Netlify), otherwise fallback to same-origin
+  return (import.meta as any).env.VITE_API_URL || '';
 };
+
 
 export const apiFetch = async (endpoint: string, options: RequestInit = {}) => {
   const baseUrl = await getBaseUrl();
