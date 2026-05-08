@@ -19,7 +19,7 @@ import AttendanceToggle from './components/AttendanceToggle';
 type ViewState = 'welcome' | 'login' | 'register' | 'dashboard' | 'booking' | 'lab' | 'radio' | 'vitals' | 'admin' | 'admit' | 'medgemma' | 'refill' | 'reception' | 'doctor';
 
 function App() {
-  const [view, setView] = useState<ViewState>('login');
+  const [view, setView] = useState<ViewState>('welcome');
   const [userRole, setUserRole] = useState<string | null>(null);
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   useEffect(() => {

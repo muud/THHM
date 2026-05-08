@@ -35,5 +35,25 @@
     "prescriptionRefill": "Your refill is being prepared. You’ll get an SMS when it’s ready.",
     "paymentCompleted": "Payment successful. Thank you for trusting us with your care.",
     "profileUpdated": "Your information has been updated. If you changed your NHIF number, your claims will now use the new one."
+  },
+  "welcome": {
+    "cta": "Start My Health Journey",
+    "slides": [
+      {
+        "title": "World-Class Care, Personalized for You",
+        "subtitle": "Experience a new standard of healthcare where technology meets compassion.",
+        "image": "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=2000"
+      },
+      {
+        "title": "Advanced Technology at Your Fingertips",
+        "subtitle": "Precision diagnostics and AI-powered insights for faster, better healing.",
+        "image": "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=2000"
+      },
+      {
+        "title": "Compassion in Every Interaction",
+        "subtitle": "We're here to listen and support you – every step of the way.",
+        "image": "https://images.unsplash.com/photo-1576091160550-21735999291c?auto=format&fit=crop&q=80&w=2000"
+      }
+    ]
   }
 }
