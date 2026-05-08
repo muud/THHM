@@ -4,7 +4,7 @@ from django.views.generic import RedirectView, TemplateView
 from apps.core.views import (
     role_redirect, patient_overview_api, login_api, 
     logout_api, get_csrf_token, manage_users_api, 
-    delete_user_api, get_staff_status_api
+    delete_user_api, get_staff_status_api, patient_ai_assistant_api
 )
 from apps.dashboard.views import admin_metrics_api
 from apps.management.views import staff_list_api, attendance_toggle_api
@@ -78,6 +78,7 @@ urlpatterns = [
     path('api/core/users/', manage_users_api),
     path('api/core/users/<int:pk>/', delete_user_api),
     path('api/core/staff-status/', get_staff_status_api),
+    path('api/core/ai-assistant/', patient_ai_assistant_api),
     path('api/management/staff/', staff_list_api),
     path('api/management/attendance/toggle/', attendance_toggle_api),
 ]

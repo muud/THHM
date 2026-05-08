@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import './../index.css';
 import microcopy from '../data/microcopy.json';
+
+import HospitalLogo from './HospitalLogo';
 
 interface WelcomeScreenProps {
   onStart: () => void;
@@ -8,55 +10,62 @@ interface WelcomeScreenProps {
 }
 
 const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onStart, onLogin }) => {
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const slides = microcopy.welcome.slides;
+  const w = microcopy.welcome;
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 6000);
-    return () => clearInterval(timer);
-  }, [slides.length]);
+  // Fallback banner if the uploaded one isn't found in /public yet
+  const fallbackBanner = "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=2000";
 
   return (
-    <main className="welcome-carousel">
-      {/* Top Navigation */}
-      <div className="auth-overlay">
-        <button onClick={onLogin} className="glass-btn">
+    <main className="welcome-branded">
+      {/* Top Header with Logo */}
+      <nav className="branded-nav">
+        <div className="logo-container">
+          <div className="hospital-logo">
+            <HospitalLogo />
+          </div>
+          <div className="hospital-info">
+            <h1 className="nav-title">{w.hospitalName}</h1>
+            <p className="nav-tagline">{w.tagline}</p>
+          </div>
+        </div>
+        <button onClick={onLogin} className="glass-btn primary">
           Sign In
         </button>
-      </div>
+      </nav>
 
-      {/* Carousel Slides */}
-      {slides.map((slide, index) => (
-        <div 
-          key={index} 
-          className={`carousel-slide ${index === currentSlide ? 'active' : ''}`}
-        >
-          <img src={slide.image} alt={slide.title} className="slide-image" />
-          
-          {index === currentSlide && (
-            <div className="carousel-overlay">
-              <h1 className="carousel-title">{slide.title}</h1>
-              <p className="carousel-subtitle">{slide.subtitle}</p>
-              <button className="premium-cta" onClick={onStart}>
-                {microcopy.welcome.cta}
-              </button>
-            </div>
-          )}
-        </div>
-      ))}
-
-      {/* Navigation Dots */}
-      <div className="glass-nav">
-        {slides.map((_, index) => (
-          <div 
-            key={index}
-            className={`nav-dot ${index === currentSlide ? 'active' : ''}`}
-            onClick={() => setCurrentSlide(index)}
+      {/* Main Banner Section */}
+      <section className="banner-section">
+        <div className="banner-container">
+          <img 
+            src={w.banner} 
+            alt="Hospital Banner" 
+            className="main-banner"
+            onError={(e) => { (e.target as HTMLImageElement).src = fallbackBanner; }}
           />
-        ))}
-      </div>
+        </div>
+        
+        <div className="welcome-content">
+          <h2 className="welcome-heading">Welcome to {w.hospitalName}</h2>
+          <p className="welcome-subheading">
+            {w.services.join(' • ')}
+          </p>
+          
+          <button className="premium-cta branded" onClick={onStart}>
+            {w.cta}
+          </button>
+        </div>
+      </section>
+
+      {/* Footer Branded Info */}
+      <footer className="branded-footer">
+        <div className="address-box">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+            <circle cx="12" cy="10" r="3" />
+          </svg>
+          <span>{w.address}</span>
+        </div>
+      </footer>
     </main>
   );
 };

@@ -16,12 +16,14 @@ import BottomNav from './components/BottomNav';
 import QuickActionsPanel from './components/QuickActionsPanel';
 import PrescriptionExperience from './components/PrescriptionExperience';
 import AttendanceToggle from './components/AttendanceToggle';
+import AIChatOverlay from './components/AIChatOverlay';
 type ViewState = 'welcome' | 'login' | 'register' | 'dashboard' | 'booking' | 'lab' | 'radio' | 'vitals' | 'admin' | 'admit' | 'medgemma' | 'refill' | 'reception' | 'doctor';
 
 function App() {
   const [view, setView] = useState<ViewState>('welcome');
   const [userRole, setUserRole] = useState<string | null>(null);
   const [isPanelOpen, setIsPanelOpen] = useState(false);
+  const [isAIChatOpen, setIsAIChatOpen] = useState(false);
   useEffect(() => {
     let timeout: ReturnType<typeof setTimeout>;
 
@@ -104,7 +106,7 @@ function App() {
     if (action === 'vitals') goToVitals();
     if (action === 'admin') goToAdmin();
     if (action === 'refill') goToRefill();
-    if (action === 'support') alert("Connecting you to TrueHealth live support... (Coming soon)");
+    if (action === 'support') setIsAIChatOpen(true);
   };
 
   const showNav = ['dashboard', 'booking', 'lab', 'radio', 'vitals', 'admin', 'refill', 'reception', 'doctor'].includes(view);
@@ -143,6 +145,7 @@ function App() {
           onBook={goToBooking}
           onViewLabs={goToLab}
           onViewRadio={goToRadio}
+          onChat={() => setIsAIChatOpen(true)}
         />
       )}
 
@@ -209,6 +212,11 @@ function App() {
           />
         </>
       )}
+      
+      <AIChatOverlay 
+        externalOpen={isAIChatOpen} 
+        setExternalOpen={setIsAIChatOpen} 
+      />
     </div>
   );
 }

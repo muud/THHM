@@ -118,3 +118,45 @@ def suggest_medication_diagnosis(symptoms, history=""):
     except Exception as e:
         logger.error(f"MedGemma Clinical Suggestion error: {e}")
         return {"error": str(e)}
+def general_health_assistant(query, user_context=""):
+    """
+    Provides general health information and hospital navigation assistance.
+    """
+    if not api_key:
+        return {"error": "AI API key not configured."}
+
+    try:
+        if not client:
+            return {"error": "AI client not initialized."}
+
+        prompt = f"""
+        [SYSTEM: TRUEHEALTH CARE ASSISTANT]
+        You are a compassionate, intelligent virtual assistant for TrueHealth Hospital.
+        Your goal is to help patients navigate the app and answer general health questions with professional kindness.
+        
+        Hospital Context:
+        - We are TrueHealth Hospital (THH).
+        - Our mission: Your Health Is Our Mission.
+        - Location: Matrix Building, 7th Street, 2nd Avenue, Eastleigh, Nairobi - Kenya.
+        - Services: Outpatient, Inpatient, 24/7 Emergency, Promotive, Preventive, Curative care.
+        - App Features: Book appointments, view lab results, radiology reports, pharmacy refills, vitals tracking.
+        
+        User Context: {user_context}
+        User Query: {query}
+        
+        Guidelines:
+        1. Be concise but warm.
+        2. Always mention that urgent medical issues should be treated in the emergency room (24/7).
+        3. Help them find where to go in the app (e.g. "You can book a visit in the Appointments section").
+        4. Do not give specific medical prescriptions; suggest consulting our doctors.
+        """
+        
+        response = client.models.generate_content(
+            model='gemini-2.0-flash',
+            contents=prompt
+        )
+        return {"response": response.text.strip()}
+        
+    except Exception as e:
+        logger.error(f"General Assistant error: {e}")
+        return {"error": str(e)}

@@ -6,6 +6,7 @@ interface PatientDashboardProps {
   onBook: () => void;
   onViewLabs: () => void;
   onViewRadio: () => void;
+  onChat: () => void;
 }
 
 interface DashboardStats {
@@ -17,7 +18,7 @@ interface DashboardStats {
   insurance_expiry: string;
 }
 
-const PatientDashboard: React.FC<PatientDashboardProps> = ({ userName: initialUserName, onBook, onViewLabs, onViewRadio }) => {
+const PatientDashboard: React.FC<PatientDashboardProps> = ({ userName: initialUserName, onBook, onViewLabs, onViewRadio, onChat }) => {
   const [greeting, setGreeting] = useState('');
   const [subGreeting, setSubGreeting] = useState('');
   const [userName, setUserName] = useState(initialUserName);
@@ -187,7 +188,7 @@ const PatientDashboard: React.FC<PatientDashboardProps> = ({ userName: initialUs
             <p className="card-text" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
               Our compassionate care team is online and ready to listen.
             </p>
-            <button className="card-button" style={{ background: 'white', color: 'var(--primary)' }}>
+            <button className="card-button" style={{ background: 'white', color: 'var(--primary)' }} onClick={onChat}>
               Chat with care team
             </button>
           </div>

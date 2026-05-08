@@ -1,5 +1,6 @@
 from django.shortcuts import redirect
 from django.contrib.auth import authenticate, login, logout
+from apps.radio.ai_service import general_health_assistant
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
 from django.db.models import Sum
@@ -93,8 +94,11 @@ def login_api(request):
         username = data.get('username') or data.get('email')
         password = data.get('password')
         
+        logger.info(f"Login attempt for username: {username}")
+        
         user = authenticate(username=username, password=password)
         if user is not None:
+            logger.info(f"Authentication successful for {username}")
             login(request, user)
             has_patient = hasattr(user, 'patient')
             return Response({
@@ -104,9 +108,25 @@ def login_api(request):
                 'is_patient': has_patient
             })
         else:
+            logger.info(f"Authentication failed for {username}")
             return Response({'success': False, 'error': 'Invalid credentials'}, status=401)
     except Exception as e:
         return Response({'success': False, 'error': str(e)}, status=400)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def patient_ai_assistant_api(request):
+    try:
+        data = json.loads(request.body)
+        query = data.get('query')
+        if not query:
+            return Response({'error': 'Query is required'}, status=400)
+            
+        user_context = f"User: {request.user.username}, Role: {request.user.role}"
+        result = general_health_assistant(query, user_context)
+        return Response(result)
+    except Exception as e:
+        return Response({'error': str(e)}, status=400)
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
