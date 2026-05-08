@@ -5,6 +5,6 @@ django-cors-headers
 whitenoise
 python-decouple
 Pillow
-google-generativeai
+google-genai
 gunicorn
 dj-database-url

@@ -1,7 +1,9 @@
 try:
-    import google.generativeai as genai
+    from google import genai
+    from google.genai import types
 except ImportError:
     genai = None
+    types = None
 from django.conf import settings
 from decouple import config
 import logging
@@ -10,10 +12,11 @@ import json
 
 logger = logging.getLogger(__name__)
 
-# Configure Gemini
+# Initialize Gemini Client
 api_key = config('GOOGLE_API_KEY', default=None)
+client = None
 if api_key and genai:
-    genai.configure(api_key=api_key)
+    client = genai.Client(api_key=api_key)
 
 def analyze_xray(image_path, clinical_history=""):
     """
@@ -23,8 +26,9 @@ def analyze_xray(image_path, clinical_history=""):
         return {"findings": "AI API key not configured.", "impression": "Please add GOOGLE_API_KEY."}
 
     try:
-        model = genai.GenerativeModel('gemini-2.0-flash')
-        
+        if not client:
+            return {"error": "AI client not initialized."}
+
         if not os.path.exists(image_path):
             return {"error": "Image file not found."}
             
@@ -48,10 +52,13 @@ def analyze_xray(image_path, clinical_history=""):
         Format sections clearly with brackets.
         """
         
-        response = model.generate_content([
-            prompt,
-            {"mime_type": "image/jpeg", "data": image_data}
-        ])
+        response = client.models.generate_content(
+            model='gemini-2.0-flash',
+            contents=[
+                types.Part.from_bytes(data=image_data, mime_type="image/jpeg"),
+                prompt
+            ]
+        )
         
         text = response.text
         return {
@@ -75,8 +82,9 @@ def suggest_medication_diagnosis(symptoms, history=""):
         return {"error": "AI API key not configured."}
 
     try:
-        model = genai.GenerativeModel('gemini-2.0-flash')
-        
+        if not client:
+            return {"error": "AI client not initialized."}
+
         prompt = f"""
         [SYSTEM: MEDGEMMA CLINICAL DIAGNOSTIC ENGINE]
         Persona: Clinical Pathologist and Pharmacologist.
@@ -93,7 +101,10 @@ def suggest_medication_diagnosis(symptoms, history=""):
         5. [CONFIDENCE]: 0-100 score.
         """
         
-        response = model.generate_content(prompt)
+        response = client.models.generate_content(
+            model='gemini-2.0-flash',
+            contents=prompt
+        )
         text = response.text
         
         return {
