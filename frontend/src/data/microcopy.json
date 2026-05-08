@@ -39,7 +39,10 @@
     "welcome": {
     "hospitalName": "True Health Hospital",
     "tagline": "Your Health Is Our Mission",
-    "cta": "Start My Health Journey",
+    "inspiringHeadline": "Experience the Future of Compassionate Care",
+    "inspiringSubheadline": "Where cutting-edge technology meets the warmth of human touch. Your health journey begins with trust.",
+    "cta": "Begin Your Care Journey Today",
+    "signInText": "Access Patient Portal",
     "banner": "/hospital_banner.png",
     "logo": "/hospital_logo.png",
     "address": "Matrix Building, 7th Street, 2nd Avenue, Eastleigh, Nairobi - Kenya",

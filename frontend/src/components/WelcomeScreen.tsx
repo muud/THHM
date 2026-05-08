@@ -1,8 +1,7 @@
 import React from 'react';
 import './../index.css';
 import microcopy from '../data/microcopy.json';
-
-import HospitalLogo from './HospitalLogo';
+import { getAssetUrl } from '../services/assets';
 
 interface WelcomeScreenProps {
   onStart: () => void;
@@ -20,16 +19,19 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onStart, onLogin }) => {
       {/* Top Header with Logo */}
       <nav className="branded-nav">
         <div className="logo-container">
-          <div className="hospital-logo">
-            <HospitalLogo />
-          </div>
+          <img 
+            src={getAssetUrl(w.logo)} 
+            alt={w.hospitalName} 
+            className="hospital-logo real-logo"
+            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+          />
           <div className="hospital-info">
             <h1 className="nav-title">{w.hospitalName}</h1>
             <p className="nav-tagline">{w.tagline}</p>
           </div>
         </div>
         <button onClick={onLogin} className="glass-btn primary">
-          Sign In
+          {(w as any).signInText}
         </button>
       </nav>
 
@@ -37,7 +39,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onStart, onLogin }) => {
       <section className="banner-section">
         <div className="banner-container">
           <img 
-            src={w.banner} 
+            src={getAssetUrl(w.banner)} 
             alt="Hospital Banner" 
             className="main-banner"
             onError={(e) => { (e.target as HTMLImageElement).src = fallbackBanner; }}
@@ -45,12 +47,15 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onStart, onLogin }) => {
         </div>
         
         <div className="welcome-content">
-          <h2 className="welcome-heading">Welcome to {w.hospitalName}</h2>
+          <h2 className="welcome-heading">{(w as any).inspiringHeadline}</h2>
+          <p className="welcome-text-inspiring">
+            {(w as any).inspiringSubheadline}
+          </p>
           <p className="welcome-subheading">
             {w.services.join(' • ')}
           </p>
           
-          <button className="premium-cta branded" onClick={onStart}>
+          <button className="premium-cta branded pulse-btn" onClick={onStart}>
             {w.cta}
           </button>
         </div>

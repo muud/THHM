@@ -1,3 +1,5 @@
+import logging
+import json
 from django.shortcuts import redirect
 from django.contrib.auth import authenticate, login, logout
 from apps.radio.ai_service import general_health_assistant
@@ -5,7 +7,6 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
 from django.db.models import Sum
 from django.http import JsonResponse
-import json
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
@@ -13,6 +14,8 @@ from apps.appointments.models import Visit
 from apps.lab.models import TestRequest
 from apps.pharmacy.models import Prescription
 from apps.billing.models import Invoice
+
+logger = logging.getLogger(__name__)
 
 @login_required
 def role_redirect(request):
